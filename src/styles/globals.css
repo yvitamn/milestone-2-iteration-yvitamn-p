@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer components {
+  .my-class {
+    @apply bg-purpleshade-400 border border-purpleshade-400;
+  }
+  .btn {
+    @apply bg-blue-500 text-white p-2 rounded;
+  }
+  
+  .header {
+    @apply text-3xl font-bold;
+  }
+}
+
+@layer utilities {
+  .bg-purpleshade-400 {
+    background-color: #9b4d96;
+  }
+  .border-purpleshade-400 {
+    border-color: #9b4d96;
+  }
+}
+
+
+.transition-opacity {
+  transition: opacity 0.3s ease-out;
+}
+header {
+  background-color: transparent !important; /* Ensure transparency */
+}
+
+img {
+  mix-blend-mode: multiply; /* Optional: Adjust blending for better visibility */
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+
+/* Initial visible state of the modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease-out, visibility 0s 1s; /* Adds fade-out animation */
+}
+
+/* Fade-out state */
+.modal.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-out, visibility 0s 1s; /* Keeps visibility hidden after fade */
+}
+
+.modal-content {
+  text-align: center;
+}
