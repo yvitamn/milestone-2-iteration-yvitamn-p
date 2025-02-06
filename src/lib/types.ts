@@ -19,22 +19,22 @@ export interface Category {
     image?: string; // URL of the category image
   }
 
-  export type HomePageData = {
-        products: {
-          id: string | number;
-          title: string;
-          price: number;
-          description: string;
-          category: Category;
-          images: string[];
-      }[];
-        categories: {
-          id: number;
-          name: string;
-          description?: string;
-          image?: string;
-        }[];
-      };
+  // export type HomePageData = {
+  //       products: {
+  //         id: string | number;
+  //         title: string;
+  //         price: number;
+  //         description: string;
+  //         category: Category;
+  //         images: string[];
+  //     }[];
+  //       categories: {
+  //         id: number;
+  //         name: string;
+  //         description?: string;
+  //         image?: string;
+  //       }[];
+  //     };
 
 
   
@@ -61,14 +61,14 @@ export interface AuthResponse {
   
  
   
-  // User type for registration and login
+ // User type for registration and login
   export interface User {
     id: number;
     email: string;
     password: string; // Only for registration
     name: string;
     
-}
+} 
   
   // Login response type
   export interface LoginResponse {

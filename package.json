@@ -2,6 +2,7 @@
   "name": "milestone-2-yvitamn",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,20 +10,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/postcss": "^4.0.3",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
-    "next": "15.1.5",
-    "nookies": "^2.5.2",
+    "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "swr": "^2.3.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.8",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "@types/node": "^20.17.16",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@types/tailwindcss": "^3.0.11",
+    "autoprefixer": "^10.4.20",
+    "browserslist": "^4.24.4",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.3",
     "typescript": "^5"
   }
 }

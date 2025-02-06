@@ -1,10 +1,11 @@
-import { useState } from 'react';
+//import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import { fetchProductDetails } from '@/lib/api'; 
 import { ProductsType } from '@/lib/types'; 
 import { useCart } from '@/hooks/useCart'; 
 import { useModal } from '@/lib/contexts/ModalContext'; 
+import Layout from '@/components/Layout';
 
 
 // Fetch product details on the server side using getServerSideProps
@@ -40,11 +41,28 @@ interface DetailPageProps {
 }
 
 const ProductDetailPage = ({ product }: DetailPageProps) => {
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { addProductToCart } = useCart();
   const { setIsCartModalOpen } = useModal(); 
   const [error, setError] = useState<string | null>(null);
   
+  useEffect(() => {
+    if (id) {
+      const fetchDetails = async () => {
+        try {
+          const data = await fetchProductDetails(id);
+          setProduct(data); // Assuming `fetchProductDetails` returns the full product data
+          setError(null); 
+        } catch (error) {
+          console.error('Error fetching product details:', error);
+          setError('Failed to load product details. Please try again later.');
+          setProduct(null);
+        }
+      };
+      fetchDetails();
+    }
+  }, [id]);
 
   // Handler to add product to cart and open the modal
   const handleAddToCart = () => {
@@ -52,7 +70,10 @@ const ProductDetailPage = ({ product }: DetailPageProps) => {
       addProductToCart({ ...product, quantity: 1 }); // Add the product to the cart
       setIsCartModalOpen(true); // Open the cart modal
     }
-  };
+  } catch (error) {
+    setError('Failed to add the product to the cart');
+  }
+};
 
   // Loading state (if needed for client-side updates)
   if (!product && !error) {
@@ -79,6 +100,7 @@ const ProductDetailPage = ({ product }: DetailPageProps) => {
   }
 
   return (
+    <Layout>
     <div className="container mx-auto p-6">
       {/* Back Button */}
       <button
@@ -109,8 +131,9 @@ const ProductDetailPage = ({ product }: DetailPageProps) => {
         Add to Cart
       </button>
     </div>
+    </Layout>
   );
-};
+}
 
 export default ProductDetailPage;
 

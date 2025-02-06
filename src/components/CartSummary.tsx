@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CartSummaryProps } from '../lib/types';
+import { CartSummaryProps } from '@/lib/types';
 //import { useCartActions } from '../hooks/useCartActions'
 
 

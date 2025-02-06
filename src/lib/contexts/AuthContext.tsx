@@ -1,11 +1,14 @@
 import { createContext} from 'react';
+import { User } from '@/lib/types';
+
 
 // Defining the AuthContextType
 export interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
+  authToken: string | null; //authToken required
+  login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
-  user: { email: string; name: string } | null;
+  user: User | null;
 }
 
 // Create AuthContext with default values

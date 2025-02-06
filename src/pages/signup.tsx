@@ -1,9 +1,11 @@
-import { signupWithJwt } from '@/lib/auth/jwt'; // Import the signup function
+import { signupJwt } from '@/lib/auth/jwt'; // Import the signup function
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Layout from '@/components/Layout';
 
 
 const Signup: React.FC = () => {
+  const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -21,7 +23,7 @@ const Signup: React.FC = () => {
     setIsLoading(true);
     setError('');
       try {
-        const token = await signupWithJwt({email, password}); // Use the signup function
+        const token = await signupJwt(email, password, name); // Use the signup function
         console.log('User signed up and JWT token saved:', token);
         router.push('/login'); // Redirect to login after successful signup
       } catch (err) {
@@ -33,11 +35,23 @@ const Signup: React.FC = () => {
 
 
   return (
+    <Layout>
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-80">
         <h1 className="text-2xl font-semibold mb-4 text-center">Sign Up</h1>
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
+         <div className="mb-4">
+          <label className="block text-sm font-semibold mb-2">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>        
+          
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Email</label>
             <input
@@ -48,6 +62,7 @@ const Signup: React.FC = () => {
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
+    
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Password</label>
             <input
@@ -77,6 +92,7 @@ const Signup: React.FC = () => {
         </p>
       </div>
     </div>
+    </Layout>
   );
 };
 

@@ -1,17 +1,17 @@
 import { ReactNode, useState } from 'react';
-import { Product } from '@/lib/types';
-import { CartContext } from './CartContext';
+import { ProductsType } from '@/lib/types';
+import { CartContext } from '@/lib/contexts/CartContext';
 
 interface CartProviderProps {
   children: ReactNode;
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [addedProducts, setAddedProducts] = useState<Product[]>([]); // State for added products
+  const [addedProducts, setAddedProducts] = useState<ProductsType[]>([]); // State for added products
   const [checkout, setCheckout] = useState<boolean>(false); // State for checkout status
 
   // Add product to cart
-  const addProductToCart = (product: Product) => {
+  const addProductToCart = (product: ProductsType) => {
     setAddedProducts((prevProducts) => {
       const existingProduct = prevProducts.find((p) => p.id === product.id);
       if (existingProduct) {

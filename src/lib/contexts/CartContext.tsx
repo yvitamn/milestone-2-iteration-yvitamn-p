@@ -1,14 +1,14 @@
 
 
 import { createContext } from 'react';
-import { Product } from '@/lib/types'; 
+import { ProductsType } from '@/lib/types'; 
 
 
 
 export interface CartContextType {
-  addedProducts: Product[];
+  addedProducts: ProductsType[];
   checkout: boolean;
-  addProductToCart: (product: Product) => void;
+  addProductToCart: (product: ProductsType) => void;
   updateProductQuantity: (productId: string | number, quantity: number) => void;
   removeProductFromCart: (productId: string | number) => void;
   onCompleteCheckout: () => void;

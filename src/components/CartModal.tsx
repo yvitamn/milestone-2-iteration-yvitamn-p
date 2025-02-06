@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { useCart } from '../hooks/useCart';
-import { CartSummary } from '../components/CartSummary';
-import { useAuth } from '../hooks/useAuth';
-import { CartModalProps } from '../lib/types';
+import { useCart } from '@/hooks/useCart';
+import { CartSummary } from '@/components/CartSummary';
+import { useAuth } from '@/hooks/useAuth';
+import { CartModalProps } from '@/lib/types';
 import { useRouter } from 'next/router';
 
 

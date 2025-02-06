@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
+import Layout from '@/components/Layout';
 
 const Login: React.FC = () => {
   const { isAuthenticated, login, logout } = useAuth(); // Access auth functions
@@ -39,6 +40,7 @@ const Login: React.FC = () => {
   }, [isAuthenticated, router]);
 
   return (
+    <Layout>
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       {isAuthenticated ? (
         <div className="bg-white p-6 rounded shadow-md text-center">
@@ -95,6 +97,7 @@ const Login: React.FC = () => {
         </div>
       )}
     </div>
+    </Layout>
   );
 };
 

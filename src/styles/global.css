@@ -1,0 +1,121 @@
+/* @import "tailwindcss"; */
+/* @reference "../global.css"; */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --purpleshade-400: #9b4d96;
+  --background: #f0f0f0;
+  --foreground: var(--purpleshade-400);
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+h1, h2, h3 {
+  color: var(--foreground);
+}
+
+.card {
+  border: 2px solid var(--foreground);
+}
+
+@layer components {
+  .my-class {
+    background-color: var(--purpleshade-400);
+    border: 2px solid var(--purpleshade-400);
+  }
+
+  .btn {
+    background-color: #3b82f6; /* Replacing bg-blue-500 with hex */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem; /* Tailwind’s rounded class */
+  }
+
+  .header {
+    font-size: 1.875rem; /* 3xl font size */
+    font-weight: bold;
+  }
+}
+
+@layer utilities {
+  .bg-purpleshade-400 {
+    background-color: var(--purpleshade-400); /* Custom purple shade */
+  }
+
+  .border-purpleshade-400 {
+    border-color: var(--purpleshade-400); /* Custom purple shade */
+  }
+
+  /* Use Tailwind's built-in transition utilities for fade effects */
+  .fade-in {
+    opacity: 1;
+    transition: opacity 0.3s ease-out;
+  }
+
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease-out;
+}
+
+header {
+  background-color: transparent;
+}
+
+img {
+  mix-blend-mode: multiply;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease-out, visibility 0s 1s;
+}
+
+.modal.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-out, visibility 0s 1s;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+/* Custom styles for the scrollable grid */
+#product-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: scroll;
+}
+
+.product-card {
+  width: 100%;
+  max-width: 240px;
+}
+
+button {
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  cursor: pointer;
+}

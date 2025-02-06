@@ -4,7 +4,7 @@ import {
       AuthResponse,
       LoginCredentials,
       RegisterData,    
-    } from './types';
+    } from '@/lib/types';
 
 // Base URL for the API
 const BASE_URL = "https://api.escuelajs.co/api/v1";
@@ -211,15 +211,15 @@ export const fetchProductDetails = async (
  
   
   // Function to fetch statistics
-  export async function getStats(): Promise<{ totalProducts: number; totalOrders: number; totalRevenue: number }> {
-    try {
-      const response = await fetch(`${BASE_URL}/stats`);
-      return await handleResponse<{ totalProducts: number; totalOrders: number; totalRevenue: number }>(response);
-    } catch (error) {
-      await handleApiError(error);
-      throw error;
-    }
-  }
+  // export async function getStats(): Promise<{ totalProducts: number; totalOrders: number; totalRevenue: number }> {
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/stats`);
+  //     return await handleResponse<{ totalProducts: number; totalOrders: number; totalRevenue: number }>(response);
+  //   } catch (error) {
+  //     await handleApiError(error);
+  //     throw error;
+  //   }
+  // }
   
   // Function to fetch a category by ID or all categories
   export async function getCategory(id?: string): Promise<Category | Category[]> {
@@ -233,13 +233,26 @@ export const fetchProductDetails = async (
     }
   }
 
+  // Fetch products for a specific category with a limit
+export const fetchProductsByCategory = async (categoryId: string, limit: number) => {
+  try {
+    const res = await fetch(`/api/products?categoryId=${categoryId}&limit=${limit}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    const data = await res.json();
+    return data.products; // Assuming the API returns products as { products: [...] }
+  } catch (error) {
+    throw new Error('Error fetching products by category');
+  }
+};
 
 
   // Function to fetch homepage data
-export async function getHomePageData(): Promise<HomePageData> {
-    const response = await fetch(`${BASE_URL}/home`);
-    return handleResponse<HomePageData>(response);
-  }
+// export async function getHomePageData(): Promise<HomePageData> {
+//     const response = await fetch(`${BASE_URL}/home`);
+//     return handleResponse<HomePageData>(response);
+//   }
   
   // Function to complete checkout
 //   export async function checkout(data: CheckoutFormData): Promise<Order> {
