@@ -1,16 +1,13 @@
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { GetStaticProps } from 'next';
-import { fetchProducts } from '@/lib/api';
-import { 
-  ProductsType, 
-  Category
-  } from '@/lib/types';
-//import { useAuth } from '@/hooks/useAuth';
-import { getCategory } from '@/lib/api';
+import { GetServerSideProps } from 'next';
+import { fetchProducts, fetchProductsByCategory, getCategory } from '@/lib/api';
+import { ProductsType, Category } from '@/lib/types';
 import Navbar from '@/layout/Navbar';
-import Layout from '@/components/Layout';
+import { useRouter } from 'next/router';
+import { useMemoizedProducts } from '@/hooks/useMemoizedProducts'; 
+
 
 interface ProductsProps {
   products: ProductsType[]; // Data fetched on the server
@@ -18,90 +15,90 @@ interface ProductsProps {
 }
 
 // Fetch the products and categories at build time using `getStaticProps`
-export const getStaticProps: GetStaticProps = async () => {
-  try {
-    // Fetch products and categories from the server at build time
-    const products = await fetchProducts();
-    const categories = await getCategory();
-
-    return {
-      props: {
-        products, // These will be passed as props to the component
-        categories,
-      },
-      revalidate: 60,
-    };
-  } catch (error) {
-    return {
-      props: {
-        products: [],
-        categories: [],
-      },
-    };
+export const getServerSideProps: GetServerSideProps<ProductsProps> = async (context) => {
+  //console.log('Context Query:', context.query);
+  const { category } = context.query;//acces from the query
+  
+  let products: ProductsType[] =[];
+  let categories: Category[] = [];// Define categories as an array of Category
+  
+  try {   
+     // Ensure category is a string (if it's an array, take the first value)
+     const categoryId = Array.isArray(category) ? category[0] : category;
+     
+     if (category) {
+     // Fetch products for the selected category
+     const { products: fetchedProducts } = await fetchProductsByCategory(categoryId, 12); // Ensure `fetchedProducts` is an array
+     products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
+   } else {
+     // Fetch all products if no category is selected
+     const fetchedProducts = await fetchProducts(); // Check what this returns
+    //  if (Array.isArray(fetchedProducts)) {
+    //    products = fetchedProducts;
+    //  } 
+    products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
   }
+ 
+    // Fetch categories and ensure it's always an array
+    const fetchedCategories = await getCategory();
+    categories = Array.isArray(fetchedCategories) ? fetchedCategories : [fetchedCategories];
+
+  
+  } catch (error) {
+    console.error('Error fetching products or categories:', error);
+    products = []; // Default to empty array if fetching fails
+    categories = []; // Default to empty array if fetching fails
+  }
+
+  return {
+    props: {
+      products,
+      categories,
+    },
+  };
 };
 
 
 
 export default function ProductsPage({ products, categories }: ProductsProps) {
-//  const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  //const [filteredProducts, setFilteredProducts] = useState<ProductsType[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalProducts, setTotalProducts] = useState<number>(0); // Store total number of products
-  const [clientProducts, setClientProducts] = useState<ProductsType[]>([]);
+    const router = useRouter();
+    const { category } = router.query;
 
-// Fetch additional client-side data
-useEffect(() => {
-  const getProducts = async () => {
-    try {
-      setIsLoading(true);
-      const { products: fetchedProducts } = await fetchProducts();
-      setClientProducts(fetchedProducts);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to load products.');
-    } finally {
-      setIsLoading(false);
+    // Make sure `selectedCategory` is a string, not an array
+  const [selectedCategory, setSelectedCategory] = useState<string | string[]>(category || '');
+
+  useEffect(() => {
+    if (Array.isArray(category)) {
+      setSelectedCategory(category[0]); // If it's an array, just pick the first value
+    } else {
+      setSelectedCategory(category || ''); // Set the category string or empty string
     }
-  };
+  }, [category]);
 
-  getProducts();
-}, [currentPage, itemsPerPage]); 
-
-// Optionally fetch data when the component mounts
-  //   if (products.length === 0) {
-  //     getProducts(); // If no data from SSR, fetch on the client-side
-  //   }
-  // }, [products]); // optional:Dependency on products to ensure it only runs when products are empty
+   
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+   // const [clientProducts, setClientProducts] = useState<ProductsType[]>([]);
 
 
- // Memoize filtered products based on selected category
-  const memoizedFilteredProducts = useMemo(() => {
-    const productsToFilter = clientProducts;
-    //.length > 0 ? clientProducts : products;
-    if (selectedCategory === '') {
-      return productsToFilter; // Show all products if no category is selected
-    }
-    return productsToFilter.filter((product) => {
-      return product.category && product.category.id === parseInt(selectedCategory);
-    });
-  }, [clientProducts, selectedCategory]);
-
-
-  // Handle category change
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setCurrentPage(1); // Reset to page 1 when the category changes
-  };
-
-  // Pagination controls
-  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+//custom hook for memoization
+const {
+  memoizedFilteredProducts,
+  memoizedTotalPages,
+  memoizedDisplayedProducts,
+  memoizedCategories,
+} = useMemoizedProducts({
+  products,
+  categories,
+  selectedCategory,
+  itemsPerPage,
+  currentPage,
+});
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page); // Change current page
+    setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,18 +106,17 @@ useEffect(() => {
     setCurrentPage(1); // Reset to page 1 when items per page changes
   };
 
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    router.push(`/products?category=${categoryId}`);
+  };
+
   
    return (
-    <Layout>
+    //<Layout>
     <div className="container mx-auto p-6">
-      <Navbar categories={categories} onCategoryChange={handleCategoryChange} />
-      {/* Welcome message for logged-in users */}
-      {/* {user && (
-        <div className="text-center mb-6">
-          <p className="text-lg">Welcome back, {user.name}!</p>
-        </div>
-      )} */}
-
+      <Navbar categories={memoizedCategories} onCategoryChange={handleCategoryChange} />
+    
 
       {/* Error or Loading State */}
       {isLoading && <p>Loading products...</p>}
@@ -129,20 +125,13 @@ useEffect(() => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {/* {filteredProducts.length === 0 ? ( */}
-         
-          {Array.isArray(memoizedFilteredProducts) && memoizedFilteredProducts.length > 0 ? (
-            memoizedFilteredProducts.map((product) => (
-              <div key={product.id} className="col-span-1 p-4 border rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
-                <Link href={`/products/${product.id}`}>           
-              <img
-                src={product.images[0]}
-                alt={product.title}
-                className="w-full h-auto aspect-square object-cover mb-4 rounded"
-              />
-              <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
-              <p className="text-gray-600 text-sm line-clamp-3">{product.description}</p>
-             
+        {memoizedFilteredProducts.length > 0 ? (
+          memoizedDisplayedProducts.map((product) => (
+            <div key={product.id} className="col-span-1 p-4 border rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
+              <Link href={`/products/${product.id}`}>
+                <img src={product.images[0]} alt={product.title} className="w-full h-auto aspect-square object-cover mb-4 rounded" />
+                <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
+                <p className="text-gray-600 text-sm line-clamp-3">{product.description}</p>
               </Link>
             </div>
           ))
@@ -161,32 +150,27 @@ useEffect(() => {
           </select>
 
           <div className="pagination">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-4 py-2 border rounded disabled:opacity-50">
+            Previous
+          </button>
 
-            <span className="mx-4">{currentPage} / {totalPages}</span>
+          <span className="mx-4">
+            {currentPage} / {memoizedTotalPages}
+          </span>
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Next
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === memoizedTotalPages} className="px-4 py-2 border rounded disabled:opacity-50">
+            Next
             </button>
           </div>
         </div>
       </div>
-    </Layout>
+    //</Layout>
   );
 }
 
 
-//export default ProductsPage;
+//export default function ProductsPage;
+// ({ products, categories }: ProductsProps) {
 
 
 

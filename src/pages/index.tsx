@@ -16,13 +16,13 @@
   // Fetch the products and categories at build time using `getStaticProps`
   export const getStaticProps: GetStaticProps = async () => {
     try {
-      // Fetch products and categories from the server at build time
-     // const products = await fetchProducts();
+      // Fetch categories from the server at build time
+    
       const categories = await getCategory();
   
       return {
         props: {
-        //  products, // These will be passed as props to the component
+  
           categories,
         },
         revalidate: 60,
@@ -30,7 +30,7 @@
     } catch (error) {
       return {
         props: {
-        //  products: [],
+    
           categories: [],
         },
       };
