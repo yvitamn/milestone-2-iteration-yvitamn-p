@@ -121,7 +121,7 @@ export const fetchProducts = async (
 
 // Function to fetch a single product by ID with caching
 export const fetchProductDetails = async (
-  id: string | number,
+  id: number,
   quantity: number = 1, // Defaul)
 ): Promise<ProductsType> => {
   const cacheKey = `product-${id}`;
@@ -234,7 +234,7 @@ export const fetchProductDetails = async (
   }
 
   // Fetch products for a specific category with a limit
-export const fetchProductsByCategory = async (categoryId: string, limit: number) => {
+export const fetchProductsByCategory = async (categoryId: number | string, limit: number) => {
   try {
     const res = await fetch(`/api/products?categoryId=${categoryId}&limit=${limit}`);
     if (!res.ok) {

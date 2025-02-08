@@ -23,26 +23,24 @@ export const getServerSideProps: GetServerSideProps<ProductsProps> = async (cont
   let categories: Category[] = [];// Define categories as an array of Category
   
   try {   
-     // Ensure category is a string (if it's an array, take the first value)
-     const categoryId = Array.isArray(category) ? category[0] : category;
-     
-     if (category) {
-     // Fetch products for the selected category
-     const { products: fetchedProducts } = await fetchProductsByCategory(categoryId, 12); // Ensure `fetchedProducts` is an array
-     products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
-   } else {
-     // Fetch all products if no category is selected
-     const fetchedProducts = await fetchProducts(); // Check what this returns
-    //  if (Array.isArray(fetchedProducts)) {
-    //    products = fetchedProducts;
-    //  } 
-    products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
-  }
+    // Ensure categoryId is a valid string or number
+    const categoryId: string | number | undefined = Array.isArray(category) ? category[0] : category;
+
+    // If categoryId exists and is a string or number, ensure it's parsed correctly
+    const categoryIdAsNumber = categoryId ? Number(categoryId) : null;  // Convert to number
+
+     // If categoryId is still a valid number, use it
+     if (categoryIdAsNumber && !isNaN(categoryIdAsNumber)) {
+      const { products: fetchedProducts } = await fetchProductsByCategory(categoryIdAsNumber, 12);
+      products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
+   } else {    
+      const fetchedProducts = await fetchProducts(); // Check what this returns
+      products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
+    }
  
     // Fetch categories and ensure it's always an array
     const fetchedCategories = await getCategory();
     categories = Array.isArray(fetchedCategories) ? fetchedCategories : [fetchedCategories];
-
   
   } catch (error) {
     console.error('Error fetching products or categories:', error);
@@ -65,7 +63,7 @@ export default function ProductsPage({ products, categories }: ProductsProps) {
     const { category } = router.query;
 
     // Make sure `selectedCategory` is a string, not an array
-  const [selectedCategory, setSelectedCategory] = useState<string | string[]>(category || '');
+  const [selectedCategory, setSelectedCategory] = useState<string>(category || ''); // Initializing as a string
 
   useEffect(() => {
     if (Array.isArray(category)) {

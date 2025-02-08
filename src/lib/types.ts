@@ -1,7 +1,7 @@
 
 // Frontend representation of a product
 export interface ProductsType {
-    id: string | number;
+    id: number | string ;
     title: string;
     description: string;
     price: number;
@@ -13,7 +13,7 @@ export interface ProductsType {
 
 // Category information
 export interface Category {
-    id: string | number;
+    id: number | string ;
     name: string;
     description?: string;
     image?: string; // URL of the category image

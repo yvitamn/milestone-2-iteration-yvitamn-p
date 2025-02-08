@@ -45,22 +45,21 @@ const ProductDetailPage = ({ product }: DetailPageProps) => {
   const router = useRouter();
   const { addProductToCart } = useCart();
   const { setIsCartModalOpen } = useModal(); 
-  const [error, setError] = useState<string | null>(null);
-
-  const [fetchedProduct, setFetchedProduct] = useState<ProductsType | null>(null);
+  const [error] = useState<string | null>(null);
+  const [fetchedProduct] = useState<ProductsType | null>(null);
 
   // Fetch product details using the product ID
-  useEffect(() => {
-    if (!product) return; // If there's no product, don't proceed
+  // useEffect(() => {
+  //   if (!product) return; // If there's no product, don't proceed
 
-    setFetchedProduct(product); // Directly set fetched product if server-side rendering is successful
-  }, [product]);
+  //   setFetchedProduct(product); // Directly set fetched product if server-side rendering is successful
+  // }, [product]);
 
 
   // Handler to add product to cart and open the modal
   const handleAddToCart = () => {
     if (fetchedProduct) {
-      addProductToCart({ ...product, quantity: 1 }); // Add the product to the cart
+      addProductToCart({ ...fetchedProduct, quantity: 1 }); // Add the product to the cart
       setIsCartModalOpen(true); // Open the cart modal
     }
   }; 
@@ -113,7 +112,11 @@ const ProductDetailPage = ({ product }: DetailPageProps) => {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="bg-blue-500 
+          text-white py-2 
+          px-6 rounded-md hover:bg-blue-600 
+          disabled:bg-gray-300 
+          disabled:cursor-not-allowed"
           aria-label="Add to Cart"
           role="button"
           tabIndex={0}

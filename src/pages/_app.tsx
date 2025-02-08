@@ -2,15 +2,10 @@
 import type { AppProps } from 'next/app';
 import { AuthProvider } from '@/lib/contexts/AuthProvider';
 import { CartProvider } from '@/lib/contexts/CartProvider';
-//import { ProductCacheProvider } from '@/lib/contexts/ProductCacheProvider';
-import { Layout } from '@/components/Layout';
+import  Layout from '@/components/Layout';
 import { ModalProvider } from '@/lib/contexts/ModalContext';
 import '@/styles/global.css'; 
-
-// Dynamically import Layout using React.lazy
 import React, { Suspense } from 'react';
-
-//const Layout = React.lazy(() => import('@/components/Layout'));
 
 
 function MyApp({ Component, pageProps }: AppProps) {
