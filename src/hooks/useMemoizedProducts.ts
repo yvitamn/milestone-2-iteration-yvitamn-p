@@ -5,16 +5,16 @@ interface MemoizedProductsParams {
   products: ProductsType[];
   categories: Category[];
   selectedCategory: string | string[] | null;
-  itemsPerPage: number;
-  currentPage: number;
+  // itemsPerPage: number;
+  // currentPage: number;
 }
 
 export const useMemoizedProducts = ({
   products,
   categories,
   selectedCategory,
-  itemsPerPage,
-  currentPage,
+  // itemsPerPage,
+  // currentPage,
 }: MemoizedProductsParams) => {
 
   // Memoize filtered products based on selected category
@@ -29,17 +29,17 @@ export const useMemoizedProducts = ({
   }, [products, selectedCategory]);
 
   // Memoize total pages for pagination
-  const memoizedTotalPages = useMemo(() => {
-    return Math.ceil(memoizedFilteredProducts.length / itemsPerPage);
-  }, [memoizedFilteredProducts, itemsPerPage]);
+  // const memoizedTotalPages = useMemo(() => {
+  //   return Math.ceil(memoizedFilteredProducts.length / itemsPerPage);
+  // }, [memoizedFilteredProducts, itemsPerPage]);
 
   // Memoize the displayed products based on pagination
-  const memoizedDisplayedProducts = useMemo(() => {
-    return memoizedFilteredProducts.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    );
-  }, [memoizedFilteredProducts, currentPage, itemsPerPage]);
+  // const memoizedDisplayedProducts = useMemo(() => {
+  //   return memoizedFilteredProducts.slice(
+  //     (currentPage - 1) * itemsPerPage,
+  //     currentPage * itemsPerPage
+  //   );
+  // }, [memoizedFilteredProducts, currentPage, itemsPerPage]);
 
   // Memoize categories list (could be sorted or transformed)
   const memoizedCategories = useMemo(() => {
@@ -48,8 +48,8 @@ export const useMemoizedProducts = ({
 
   return {
     memoizedFilteredProducts,
-    memoizedTotalPages,
-    memoizedDisplayedProducts,
+    // memoizedTotalPages,
+    // memoizedDisplayedProducts,
     memoizedCategories,
   };
 };

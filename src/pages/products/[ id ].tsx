@@ -1,132 +1,176 @@
+
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { GetServerSideProps } from 'next';
-import { fetchProductDetails } from '@/lib/api'; 
-import { ProductsType } from '@/lib/types'; 
-import { useCart } from '@/hooks/useCart'; 
-import { useModal } from '@/lib/contexts/ModalContext'; 
-import Layout from '@/components/Layout';
+import { fetchProducts, fetchProductsByCategory, getCategory } from '@/lib/api';
+import { ProductsType, Category } from '@/lib/types';
+import Navbar from '@/layout/Navbar';
+import { useRouter } from 'next/router';
+import { useMemoizedProducts } from '@/hooks/useMemoizedProducts'; 
 
 
-// Fetch product details on the server side using getServerSideProps
-export const getServerSideProps: GetServerSideProps<DetailPageProps> = async (context) => {
-  const { id } = context.params as { id: string };
+interface ProductsProps {
+  products: ProductsType[]; // Data fetched on the server
+  categories: Category[];
+}
 
-  try {
-    const product = await fetchProductDetails(id); // Fetch product details from the API
+// Fetch the products and categories at build time using `getStaticProps`
+export const getServerSideProps: GetServerSideProps<ProductsProps> = async (context) => {
+  //console.log('Context Query:', context.query);
+  const { category } = context.query;//acces from the query
+  
+  let products: ProductsType[] =[];
+  let categories: Category[] = [];// Define categories as an array of Category
+  
+  try {   
+    // Ensure categoryId is a valid string or number
+    const categoryId: string | number | undefined = Array.isArray(category) ? category[0] : category;
 
-    if (!product) {
-      return {
-        notFound: true, // Show a 404 page if the product is not found
-      };
+    // If categoryId exists and is a string or number, ensure it's parsed correctly
+    const categoryIdAsNumber = categoryId ? Number(categoryId) : null;  // Convert to number
+
+     // If categoryId is still a valid number, use it
+     if (categoryIdAsNumber && !isNaN(categoryIdAsNumber)) {
+      const { products: fetchedProducts } = await fetchProductsByCategory(categoryIdAsNumber, 12);
+      products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
+   } else {    
+      const fetchedProducts = await fetchProducts(); // Check what this returns
+      products = Array.isArray(fetchedProducts) ? fetchedProducts : [];
     }
-
-    return {
-      props: {
-        product,
-      },
-    };
+ 
+    // Fetch categories and ensure it's always an array
+    const fetchedCategories = await getCategory();
+    categories = Array.isArray(fetchedCategories) ? fetchedCategories : [fetchedCategories];
+  
   } catch (error) {
-    console.error('Failed to fetch product details:', error);
-    return {
-      notFound: true, // Show a 404 page if there's an error
-    };
+    console.error('Error fetching products or categories:', error);
+    products = []; // Default to empty array if fetching fails
+    categories = []; // Default to empty array if fetching fails
   }
+
+  return {
+    props: {
+      products,
+      categories,
+    },
+  };
 };
 
 
 
-interface DetailPageProps {
-  product: ProductsType; // Data fetched on the server
-}
+export default function ProductsPage({ products, categories }: ProductsProps) {
+    const router = useRouter();
+    const { category } = router.query;
 
-const ProductDetailPage = ({ product }: DetailPageProps) => {
-  //const { id } = useParams<{ id: string }>();
-  const router = useRouter();
-  const { addProductToCart } = useCart();
-  const { setIsCartModalOpen } = useModal(); 
-  const [error] = useState<string | null>(null);
-  const [fetchedProduct] = useState<ProductsType | null>(null);
+    // Make sure `selectedCategory` is a string, not an array
+  const [selectedCategory, setSelectedCategory] = useState<string>(Array.isArray(category) ? category[0] : category || ''); // Initializing as a string// Initializing as a string
 
-  // Fetch product details using the product ID
-  // useEffect(() => {
-  //   if (!product) return; // If there's no product, don't proceed
-
-  //   setFetchedProduct(product); // Directly set fetched product if server-side rendering is successful
-  // }, [product]);
-
-
-  // Handler to add product to cart and open the modal
-  const handleAddToCart = () => {
-    if (fetchedProduct) {
-      addProductToCart({ ...fetchedProduct, quantity: 1 }); // Add the product to the cart
-      setIsCartModalOpen(true); // Open the cart modal
+  useEffect(() => {
+    if (Array.isArray(category)) {
+      setSelectedCategory(category[0]); // If it's an array, just pick the first value
+    } else {
+      setSelectedCategory(category || ''); // Set the category string or empty string
     }
-  }; 
+  }, [category]);
 
-  // Loading state (if needed for client-side updates)
-  if (!fetchedProduct && !error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+   
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    // const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+    // const [currentPage, setCurrentPage] = useState<number>(1);
+   // const [clientProducts, setClientProducts] = useState<ProductsType[]>([]);
+
+
+//custom hook for memoization
+const {
+  memoizedFilteredProducts,
+  // memoizedTotalPages,
+  // memoizedDisplayedProducts,
+  memoizedCategories,
+} = useMemoizedProducts({
+  products,
+  categories,
+  selectedCategory,
+  // itemsPerPage,
+  // currentPage,
+});
+
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  // };
+
+  // const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setItemsPerPage(Number(event.target.value));
+  //   setCurrentPage(1); // Reset to page 1 when items per page changes
+  // };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    router.push(`/products?category=${categoryId}`);
+  };
+
+  
+   return (
+    
+    <div className="container mx-auto p-6">
+      <Navbar categories={memoizedCategories} onCategoryChange={handleCategoryChange} />
+    
+
+      {/* Error or Loading State */}
+      {isLoading && <p>Loading products...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+            
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {memoizedFilteredProducts.length > 0 ? (
+          memoizedFilteredProducts.map((product) => (
+            <div key={product.id} className="col-span-1 p-4 border rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
+              <Link href={`/products/${product.id}`}>
+                <img src={product.images[0]} alt={product.title} className="w-full h-auto aspect-square object-cover mb-4 rounded" />
+                <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
+                <p className="text-gray-600 text-sm line-clamp-3">{product.description}</p>
+              </Link>
+            </div>
+          ))
+        ) : (
+          <p>No products found in this category.</p>
+        )}
       </div>
-    );
-  }
+    
+    {/* Pagination Controls */}
+    {/* <div className="flex justify-between items-center mt-6">
+          <label>Items per page:</label>
+          <select onChange={handleItemsPerPageChange} value={itemsPerPage} className="p-2 border rounded">
+            <option value={12}>12</option>
+            <option value={24}>24</option>
+            <option value={36}>36</option>
+          </select>
 
-  // Error state
-  if (error) {
-    return (
-      <div className="text-red-600 text-center p-4 bg-red-100 rounded-lg">
-        {error}
-        <button
-          onClick={() => router.reload()} // Reload the page to retry
-          className="mt-2 bg-red-500 text-white py-1 px-4 rounded-md hover:bg-red-600"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+          <div className="pagination">
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-4 py-2 border rounded disabled:opacity-50">
+            Previous
+          </button>
 
-  return (
-    <Layout>
-      <div className="container mx-auto p-6">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()} // Use Next.js's router to go back
-          className="mb-6 bg-gray-500 text-white py-2 px-6 rounded-md hover:bg-gray-600"
-        >
-          Back
-        </button>
+          <span className="mx-4">
+            {currentPage} / {memoizedTotalPages}
+          </span>
 
-        {/* Product Details */}
-        <h2 className="text-4xl font-bold mb-6">{fetchedProduct?.title}</h2>
-        <img
-          src={fetchedProduct?.images[0]}
-          alt={fetchedProduct?.title}
-          className="mb-4 w-full max-w-md mx-auto aspect-square object-cover rounded-lg shadow-lg"
-        />
-        <p className="text-lg mb-4">{fetchedProduct?.description}</p>
-        <p className="text-xl font-semibold mb-4">${fetchedProduct?.price}</p>
-
-        {/* Add to Cart Button */}
-        <button
-          onClick={handleAddToCart}
-          className="bg-blue-500 
-          text-white py-2 
-          px-6 rounded-md hover:bg-blue-600 
-          disabled:bg-gray-300 
-          disabled:cursor-not-allowed"
-          aria-label="Add to Cart"
-          role="button"
-          tabIndex={0}
-        >
-          Add to Cart
-        </button>
-      </div>
-    </Layout>
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === memoizedTotalPages} className="px-4 py-2 border rounded disabled:opacity-50">
+            Next
+            </button>
+          </div>
+        </div> */}
+      </div> 
+    
   );
 }
 
-export default ProductDetailPage;
+
+//export default function ProductsPage;
+// ({ products, categories }: ProductsProps) {
+
+
+
+
 

@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 

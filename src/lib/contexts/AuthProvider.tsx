@@ -1,10 +1,10 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useAuth } from '@/hooks/useAuth'; // assuming your useAuth hook is here
-import { LoginCredentials, RegisterData } from '../types';
+import { useAuth } from '@/hooks/useAuth'; 
+import { LoginCredentials, RegisterData, User } from '@/lib/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: any | null;
+  user: User | null;
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (data: RegisterData) => Promise<void>;
   logout: () => void;

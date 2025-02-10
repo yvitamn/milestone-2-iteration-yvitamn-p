@@ -4,7 +4,7 @@ import { AuthProvider } from '@/lib/contexts/AuthProvider';
 import { CartProvider } from '@/lib/contexts/CartProvider';
 import  Layout from '@/components/Layout';
 import { ModalProvider } from '@/lib/contexts/ModalContext';
-import '@/styles/global.css'; 
+import '@/styles/globals.css'; 
 import React, { Suspense } from 'react';
 
 

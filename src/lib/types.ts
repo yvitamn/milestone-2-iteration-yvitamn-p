@@ -45,9 +45,8 @@ export interface Category {
 
   
 export interface AuthResponse {
-    access_token: string;
-    token_type: string;
-    expires_in: number;
+  success: boolean;
+  user: User;
   }
   
   export interface LoginCredentials {
@@ -72,7 +71,7 @@ export interface AuthResponse {
   
   // Login response type
   export interface LoginResponse {
-    access_token: string;
+    //access_token: string;
     user: User;
   }
   
@@ -83,11 +82,11 @@ export interface AuthResponse {
     totalRevenue: number;
   }
   
-  // API Error type
-  export interface ApiErrorData {
-    message: string;
-    statusCode?: number;
-  }
+  // // API Error type
+  // export interface ApiErrorData {
+  //   message: string;
+  //   statusCode?: number;
+  // }
   
 
 // Interface for CartModal props
@@ -120,14 +119,14 @@ export interface CartModalProps {
   
 
   // Custom API Error class
-export class ApiError extends Error {
-    constructor(
-      public status: number,
-      message: string,
-      public data?: Record<string, unknown>
-    ) {
-      super(message);
-      this.name = "ApiError";
-    }
-  }
+// export class ApiError extends Error {
+//     constructor(
+//       public status: number,
+//       message: string,
+//       public data?: Record<string, unknown>
+//     ) {
+//       super(message);
+//       this.name = "ApiError";
+//     }
+//   }
 

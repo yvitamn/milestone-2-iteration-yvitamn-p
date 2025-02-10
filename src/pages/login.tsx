@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
@@ -92,6 +92,7 @@ const Login: React.FC = () => {
         )}
       </div>
     </Layout>
+  );
 };
 
 export default Login;

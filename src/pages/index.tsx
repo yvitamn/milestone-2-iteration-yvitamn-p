@@ -56,6 +56,8 @@
         try {
           setIsLoading(true);
           const productsByCategory: { [key: string]: ProductsType[] } = {};
+          
+          // Loop over categories to fetch products for each
           for (const category of categories) {
             // Ensure category.id is treated as a number
             const categoryIdAsNumber = typeof category.id === 'string' ? parseInt(category.id, 10) : category.id;
@@ -126,7 +128,7 @@
             {categories.slice(0, 4).map((category) => (
               <div key={category.id} className="w-96 flex-shrink-0 p-4 border rounded-lg shadow-lg hover:shadow-xl transition-all duration-500 ease-in-out">
                 <h3 className="text-lg font-semibold mb-4">{category.name}</h3>
-                {/* Display up to 12 products for each category */}
+                {/* Scrollable Product List */}
                 <div className="overflow-x-auto flex gap-4">
                   {categoryProducts[String(category.id)]?.map((product) => (
                     <div key={product.id} className="flex-shrink-0 w-64">
@@ -136,6 +138,8 @@
                           alt={product.title}
                           className="w-full h-64 object-cover rounded"
                         />
+                        <h4 className="text-md font-semibold mt-2">{product.title}</h4>
+                        <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
                       </Link>
                     </div>
                   ))}
