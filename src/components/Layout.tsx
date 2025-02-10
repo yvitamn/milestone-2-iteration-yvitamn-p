@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/layout/Header';
 import Footer from '@/layout/Footer';
 import WelcomeModal from '@/components/WelcomeModal';
-import { useCategories } from '@/hooks/useCategories';
+//import { useCategories } from '@/hooks/useCategories';
 import CartModal from '@/components/CartModal';
 import Navbar from '@/layout/Navbar';
 import { useCart } from '@/hooks/useCart';
@@ -48,6 +48,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   //   onCategoryChange(categoryId);
   // };
 
+  // const handleCategoryChange = (categoryId: string) => {
+  //   // Handle category change (e.g., filter products based on categoryId)
+  //   console.log('Selected category ID:', categoryId);
+  // };
+
+  
+
+
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -61,8 +70,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         /> 
       {/* <nav className="bg-gray-800 p-4 text-white"> */}
    
-     
 
+
+   {/* Page Content */}
+      <main className="flex-grow container mx-auto p-6">
+      {children}
+      
       {/* Welcome Modal */}
       {isWelcomeModalOpen && <WelcomeModal onClose={() => setIsWelcomeModalOpen(false)} />}
 
@@ -81,10 +94,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         />
       )} */}
 
-      {/* Page Content */}
-      {/* <main className="flex-grow container mx-auto p-6">{children}</main> */}
+      
+      
 
       {/* Footer */}
+
+      </main>
       <Footer />
     </div>
   );

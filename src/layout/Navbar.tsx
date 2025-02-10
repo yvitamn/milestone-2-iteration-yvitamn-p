@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Category } from '@/lib/types';
 import { useRouter } from 'next/router';
-
+import { useCategories } from '@/hooks/useCategories';
 
 
 interface NavbarProps {
@@ -13,9 +13,9 @@ interface NavbarProps {
   //onCartClick: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
+const Navbar: React.FC<NavbarProps> = ({ onCategoryChange }) => {
   const { isAuthenticated, user, logout } = useAuth(); // Access user and authentication state
-  
+  const { data, loading, error } = useCategories('all');
   const pathname = usePathname(); // To track the current route
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
   const dropdownRef = useRef<HTMLDivElement>(null);  // Create a ref for the dropdown
@@ -35,9 +35,9 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
   // Handle category selection and redirect to the category page
   const handleCategoryClick = (categoryId: string) => {
     setIsDropdownOpen(false); // Close the dropdown
-    onCategoryChange(categoryId); // Trigger callback
+    onCategoryChange(categoryId.toString()); // Trigger callback
     // Redirect to category page for clientside navigation
-    //router.push(`/products/category/${categoryId}`);
+    router.push(`/products/category/${categoryId}`);
   };
 
   // Close the dropdown if the user clicks outside of it
@@ -53,6 +53,18 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading categories: {error}</div>;
+
+
+    // Type guard to narrow down the type of `data`
+    const isCategoryArray = (data: any): data is Category[] => {
+      return Array.isArray(data) && data.length > 0 && 'name' in data[0]; // Checks if the first item has the 'name' property, which is specific to `Category`
+    };
+
+    // Check if data is an array of Category, to prevent TypeScript error
+    const categories = isCategoryArray(data) ? data : [];
 
 
 
@@ -80,10 +92,10 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
               className="absolute right-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
               role="menu"
             >
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => handleCategoryClick(category.id.toString())} // Navigate to the category page
+                  onClick={() => handleCategoryClick(category.id)} // Navigate to the category page
                   className="block w-full px-4 py-2 text-left hover:bg-gray-100"
                   role="menuitem"
                 >

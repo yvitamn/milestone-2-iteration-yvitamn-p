@@ -1,13 +1,17 @@
 import { GetServerSideProps } from 'next';
 import { fetchProductsByCategory } from '@/lib/api'; // Fetch products by category
-import { ProductsType } from '@/lib/types';
+import { Category, ProductsType } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
+
+
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.params as { id: string };
   let products: ProductsType[] = [];
+
 
   try {
     products = await fetchProductsByCategory(id); // Fetch products for the selected category
@@ -28,16 +32,22 @@ interface CategoryPageProps {
   categoryId: string;
 }
 
-const CategoryPage = ({ products, categoryId }: CategoryPageProps) => {
-  const { data: categories, loading, error } = useCategories('all');
+
+ const CategoryPage = ({ products, categoryId }: CategoryPageProps) => {
+  
+  const { data, loading, error } = useCategories('byCategory');
   const router = useRouter();
+ 
 
-  if (loading) return <div>Loading categories...</div>;
-  if (error) return <div>Error loading categories: {error}</div>;
+  if (loading) return <div>Loading products...</div>;
+  if (error) return <div>Error loading products: {error}</div>;
 
+  
+  
   return (
     <div className="container mx-auto p-6">
-      <h2 className="text-4xl font-bold mb-6">Products in Category</h2>
+     {/*Handled category dropdown */}
+      {/* <h2 className="text-4xl font-bold mb-6">Products in Category</h2>
 
       <div className="mb-4">
         <select
@@ -47,14 +57,16 @@ const CategoryPage = ({ products, categoryId }: CategoryPageProps) => {
             router.push(`/products/category/${categoryId}`);
           }}
         >
-          {categories?.map((category) => (
+          {categories?.map((category: Category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
+
+        {/* Display Products based on selected category */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
           products.map((product: ProductsType) => (

@@ -45,11 +45,14 @@ const ProductsPage = ({ products }: ProductsPageProps) => {
   if (loading) return <div>Loading categories...</div>;
   if (error) return <div>Error loading categories: {error}</div>;
 
+
+
+
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-4xl font-bold mb-6">All Products</h2>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <select
           onChange={(e) => {
             const categoryId = e.target.value;
@@ -63,7 +66,7 @@ const ProductsPage = ({ products }: ProductsPageProps) => {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredProducts.length > 0 ? (

@@ -2,6 +2,8 @@ import { GetServerSideProps } from 'next';
 import { fetchProductDetails } from '@/lib/api'; // Fetch single product by ID
 import { ProductsType } from '@/lib/types';
 import Layout from '@/components/Layout';
+import Link from 'next/link';
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.params as { id: string };
@@ -30,6 +32,9 @@ const ProductDetailPage = ({ product }: ProductDetailProps) => {
   return (
     <Layout>
       <div className="container mx-auto p-6">
+        <Link href="/products">
+          <a className="back-button mb-6">Back to Products</a> {/* You can change the link as needed */}
+        </Link>
         <h2 className="text-4xl font-bold mb-6">{product.title}</h2>
         <img
           src={product.images[0]}
