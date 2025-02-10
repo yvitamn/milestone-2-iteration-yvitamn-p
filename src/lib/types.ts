@@ -17,24 +17,16 @@ export interface Category {
     name: string;
     description?: string;
     image?: string; // URL of the category image
+
   }
 
-  // export type HomePageData = {
-  //       products: {
-  //         id: string | number;
-  //         title: string;
-  //         price: number;
-  //         description: string;
-  //         category: Category;
-  //         images: string[];
-  //     }[];
-  //       categories: {
-  //         id: number;
-  //         name: string;
-  //         description?: string;
-  //         image?: string;
-  //       }[];
-  //     };
+  export interface CategoryTopCategories {
+  id: number | string;
+  name: string;
+  description?: string;
+  image?: string;
+  products: ProductsType[];  // List of products for the category
+}
 
 
   

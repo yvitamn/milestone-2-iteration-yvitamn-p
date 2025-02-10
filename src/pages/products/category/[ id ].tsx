@@ -6,7 +6,7 @@ import Layout from '@/components/Layout';
 import Link from 'next/link';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { categoryId, id } = context.params as { categoryId: string; id: string };
+  const {  id } = context.params as { categoryId: string; id: string };
   let product: ProductsType | null = null;
 
   try {
@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       product,
-      categoryId,
+      categoryId: id,
     },
   };
 };
@@ -26,6 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 interface ProductDetailWithCategoryProps {
   product: ProductsType | null;
   categoryId: string;
+  //categories: Category[];//perlu inikah?
 }
 
 const ProductDetailPageWithCategory = ({ product, categoryId }: ProductDetailWithCategoryProps) => {
@@ -50,6 +51,12 @@ const ProductDetailPageWithCategory = ({ product, categoryId }: ProductDetailWit
         />
         <p className="text-lg mb-4">{product.description}</p>
         <p className="text-xl font-semibold mb-4">${product.price}</p>
+        
+        {/* Add to Cart Button */}
+        <button onClick={() => {}} className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600">
+              Add to Cart
+            </button>
+      
       </div>
     </Layout>
   );

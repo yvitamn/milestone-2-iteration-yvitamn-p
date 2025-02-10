@@ -8,7 +8,7 @@ import { useCategories } from '@/hooks/useCategories';
 
 
 interface NavbarProps {
-  categories: Category[]; // Add categories prop
+  
   onCategoryChange: (categoryId: string) => void; // Add callback for category selection
   //onCartClick: () => void;
 }
@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ onCategoryChange }) => {
   const isActive = (path: string) => pathname === path;
 
   // Handle category selection and redirect to the category page
-  const handleCategoryClick = (categoryId: string) => {
+  const handleCategoryClick = (categoryId: string | number) => {
     setIsDropdownOpen(false); // Close the dropdown
     onCategoryChange(categoryId.toString()); // Trigger callback
     // Redirect to category page for clientside navigation

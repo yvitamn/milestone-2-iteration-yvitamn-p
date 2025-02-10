@@ -12,7 +12,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     product = await fetchProductDetails(Number(id)); // Fetch product by ID
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error('Error fetching product details:', error);
+  }
+  if (!product) {
+    return {
+      notFound: true, // Show 404 if the product is not found
+    };
   }
 
   return {
@@ -43,6 +48,12 @@ const ProductDetailPage = ({ product }: ProductDetailProps) => {
         />
         <p className="text-lg mb-4">{product.description}</p>
         <p className="text-xl font-semibold mb-4">${product.price}</p>
+      
+        {/* Add to Cart Button */}
+        <button onClick={() => {}} className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600">
+            Add to Cart
+            </button>
+      
       </div>
     </Layout>
   );

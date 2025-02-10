@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { fetchProductsByCategory } from '@/lib/api'; // Fetch products by category
-import { Category, ProductsType } from '@/lib/types';
+import {  ProductsType } from '@/lib/types';
 import { useCategories } from '@/hooks/useCategories';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ interface CategoryPageProps {
 
  const CategoryPage = ({ products, categoryId }: CategoryPageProps) => {
   
-  const { data, loading, error } = useCategories('byCategory');
+  const { data, loading, error } = useCategories('byCategory', categoryId as string);
   const router = useRouter();
  
 
@@ -46,25 +46,7 @@ interface CategoryPageProps {
   
   return (
     <div className="container mx-auto p-6">
-     {/*Handled category dropdown */}
-      {/* <h2 className="text-4xl font-bold mb-6">Products in Category</h2>
-
-      <div className="mb-4">
-        <select
-          value={categoryId}
-          onChange={(e) => {
-            const categoryId = e.target.value;
-            router.push(`/products/category/${categoryId}`);
-          }}
-        >
-          {categories?.map((category: Category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
+     
 
         {/* Display Products based on selected category */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

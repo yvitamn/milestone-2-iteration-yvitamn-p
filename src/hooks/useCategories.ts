@@ -1,6 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
-import { fetchCategories, fetchTopCategories, fetchProductsByCategory, fetchProductWithCategory, fetchProductDetails } from '@/lib/api'; // Import your new fetch function
+import { 
+    productCache,
+    productsCache,
+    fetchCategories, 
+    fetchTopCategories, 
+    fetchProductsByCategory, 
+    fetchProductWithCategory, 
+    fetchProductDetails } from '@/lib/api'; // Import your new fetch function
 import { Category, ProductsType } from '@/lib/types'; 
+
+
+const categoryCache: Record<string, Category[] | null> = {}; // Cache for categories
+const topCategoriesCache: Category[] | null = null; // Cache for top categories
 
 type FetchState<T> = {
   data: T | null;
@@ -29,9 +40,32 @@ export const useCategories = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setState((prevState) => ({ ...prevState, loading: true, error: null })); // Avoid using previous state directly
+        setState((prevState) => ({ ...prevState, loading: true, error: null }));
 
         let data;
+
+        // Check cache before fetching
+        if (type === 'all' && categoryCache['all-categories']) {
+          data = categoryCache['all-categories'];
+        } else if (type === 'top' && topCategoriesCache) {
+          data = topCategoriesCache;
+        } else if (type === 'byCategory' && categoryId) {
+          // Check cache for category-based products
+          const cacheKey = `products-by-category-${categoryId}`;
+          if (productsCache[cacheKey]) {
+            data = productsCache[cacheKey];
+          }
+        } else if (type === 'singleProduct' && productId) {
+          const cacheKey = `product-${productId}`;
+          if (productCache[cacheKey]) {
+            data = productCache[cacheKey];
+          }
+        } else if (type === 'singleProductNoncategory' && productId) {
+          const cacheKey = `product-${productId}`;
+          if (productCache[cacheKey]) {
+            data = productCache[cacheKey];
+          }
+        }
 
         // Fetch based on type
         if (type === 'all') {

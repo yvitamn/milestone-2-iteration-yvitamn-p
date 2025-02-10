@@ -1,9 +1,9 @@
 
 import type { AppProps } from 'next/app';
-import { AuthProvider } from '@/lib/contexts/AuthContext';
+import { AuthenticateProvider } from '@/lib/contexts/AuthenticateProvider';
 import { CartProvider } from '@/lib/contexts/CartProvider';
 import  Layout from '@/components/Layout';
-import { ModalProvider } from '@/lib/contexts/ModalContext';
+//import { ModalProvider } from '@/lib/contexts/ModalContext';
 import '@/styles/globals.css'; 
 import React, { Suspense } from 'react';
 
@@ -12,9 +12,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   //const userSession = getUserSession(null);
   
   return (
-    <AuthProvider>     
+    <AuthenticateProvider>     
       <CartProvider>
-      <ModalProvider>
+      {/* <ModalProvider> */}
          {/* Use Suspense to handle the fallback UI while Layout is loading */}
          <Suspense fallback={<div>Loading...</div>}>
       <Layout>
@@ -23,10 +23,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       
       </Layout>
       </Suspense>
-      </ModalProvider>
+      {/* </ModalProvider> */}
       </CartProvider>
       
-    </AuthProvider>
+    </AuthenticateProvider>
   );
 }
 

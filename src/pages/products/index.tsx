@@ -23,6 +23,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
 interface ProductsPageProps {
   products: ProductsType[];
+  
 }
 
 const ProductsPage = ({ products }: ProductsPageProps) => {

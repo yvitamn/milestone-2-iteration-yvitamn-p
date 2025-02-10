@@ -46,10 +46,10 @@ export async function handleApiError(error: unknown) {
 
 //--------------------------------------------------
 // Cache for storing fetched products (simple in-memory cache)
-const productsCache: Record<string, ProductsType[]> = {};
+export const productsCache: Record<string, ProductsType[]> = {};
 const categoryCache: Record<string, Category[] | null> = {};
 let topCategoriesCache: Category[] | null = null;
-const productCache: Record<string, ProductsType> = {}; 
+export const productCache: Record<string, ProductsType> = {}; 
 
 
 
