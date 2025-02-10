@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/layout/Header';
 import Footer from '@/layout/Footer';
 import WelcomeModal from '@/components/WelcomeModal';
-import ThankYouModal from '@/components/ThankYouModal';
+import { useCategories } from '@/hooks/useCategories';
 import CartModal from '@/components/CartModal';
 import Navbar from '@/layout/Navbar';
 import { useCart } from '@/hooks/useCart';
@@ -21,7 +21,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Modal state
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
-  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
+  //const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
+
+// Fetch categories for Navbar
+//const { data: categories, loading, error } = useCategories('all');
+
 
   // Close Welcome Modal after the user has visited once
   useEffect(() => {
@@ -34,24 +38,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
  
 
-// Handle Thank You Modal (e.g., after successful checkout)
-const handleCheckout = () => {
-  if (isAuthenticated) {
-    setIsThankYouModalOpen(true);
-  } else {
-    // Redirect to login if user is not authenticated
-    window.location.href = '/login'; // You can also use Next.js Router if necessary
-  }
-};
-
-
-
   // Handle Cart Modal
   const handleCartClick = () => {
     setIsCartModalOpen(true);  // Show cart modal when clicked
   };
 
-  
+  // const handleCategoryClick = (categoryId: string) => {
+  //   setIsDropdownOpen(false); // Close the dropdown
+  //   onCategoryChange(categoryId);
+  // };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -61,7 +56,9 @@ const handleCheckout = () => {
       {/* Navbar */}
       <Navbar 
       categories={[]}
-       onCategoryChange={() => {}} /> 
+       onCategoryChange={() => {}}
+      // onCartClick={handleCartClick} 
+        /> 
       {/* <nav className="bg-gray-800 p-4 text-white"> */}
    
      
@@ -77,12 +74,12 @@ const handleCheckout = () => {
       )}
 
       {/* Thank You Modal */}
-      {isThankYouModalOpen && (
+      {/* {isThankYouModalOpen && (
         <ThankYouModal 
           isOpen={isThankYouModalOpen}
           onClose={() => setIsThankYouModalOpen(false)}
         />
-      )}
+      )} */}
 
       {/* Page Content */}
       {/* <main className="flex-grow container mx-auto p-6">{children}</main> */}

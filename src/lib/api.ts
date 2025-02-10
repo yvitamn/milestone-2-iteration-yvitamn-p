@@ -330,7 +330,7 @@ export const fetchTopCategories = async (): Promise<Category[]> => {
 
 
   // Function to register a new user
-  export async function register(data: RegisterData): Promise<AuthResponse> {
+  export async function apiRegister(data: RegisterData): Promise<AuthResponse> {
     try{
     const response = await fetch(`${BASE_URL}/users`, {
       method: 'POST',
@@ -350,7 +350,7 @@ export const fetchTopCategories = async (): Promise<Category[]> => {
 
 
   // Function to log in a user
-  export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+  export async function apiLogin(credentials: LoginCredentials): Promise<AuthResponse> {
    try{
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',

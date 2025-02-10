@@ -1,6 +1,6 @@
 
 import type { AppProps } from 'next/app';
-import { AuthProvider } from '@/lib/contexts/AuthProvider';
+import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { CartProvider } from '@/lib/contexts/CartProvider';
 import  Layout from '@/components/Layout';
 import { ModalProvider } from '@/lib/contexts/ModalContext';

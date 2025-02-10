@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   
 
   setIsLoading(true);
-    setError('');
+   // setError('');
 
     try {
       await login({ email, password }); // Use login function from context

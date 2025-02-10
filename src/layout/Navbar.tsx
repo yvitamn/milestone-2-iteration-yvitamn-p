@@ -3,22 +3,30 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Category } from '@/lib/types';
+import { useRouter } from 'next/router';
+
+
 
 interface NavbarProps {
   categories: Category[]; // Add categories prop
   onCategoryChange: (categoryId: string) => void; // Add callback for category selection
+  //onCartClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
   const { isAuthenticated, user, logout } = useAuth(); // Access user and authentication state
+  
   const pathname = usePathname(); // To track the current route
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
   const dropdownRef = useRef<HTMLDivElement>(null);  // Create a ref for the dropdown
-  
+  const router = useRouter();
+
+
   const handleLogout = () => {
     logout(); // Call the logout function from context
     // You can also clear local storage or token if you're saving it
-    localStorage.removeItem('token');
+    router.push('/login');
+
   };
 
   // Check if the current route is active
@@ -27,8 +35,9 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
   // Handle category selection and redirect to the category page
   const handleCategoryClick = (categoryId: string) => {
     setIsDropdownOpen(false); // Close the dropdown
-    // Redirect to category page
-    window.location.href = `/products/category/${categoryId}`;
+    onCategoryChange(categoryId); // Trigger callback
+    // Redirect to category page for clientside navigation
+    //router.push(`/products/category/${categoryId}`);
   };
 
   // Close the dropdown if the user clicks outside of it
@@ -44,6 +53,8 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+
 
   return (
     <nav className="bg-gray-800 p-4 text-white shadow-lg">
@@ -83,13 +94,15 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
           )}
         </div>
 
+       
+  
         {/* Other Links */}
         <Link href="/products" className={`${isActive('/products') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}>
           Products
         </Link>
         {isAuthenticated && (
           <Link href="/checkout" className={`${isActive('/checkout') ? 'text-gray-300' : 'hover:text-gray-300'}`}>
-            Checkout
+               🛒 Checkout
           </Link>
         )}
         {isAuthenticated ? (
