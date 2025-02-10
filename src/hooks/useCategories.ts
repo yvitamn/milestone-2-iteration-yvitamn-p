@@ -1,0 +1,76 @@
+import { useState, useEffect, useMemo } from 'react';
+import { fetchCategories, fetchTopCategories, fetchProductsByCategory, fetchProductWithCategory, fetchProductDetails } from '@/lib/api'; // Import your new fetch function
+import { Category, ProductsType } from '@/lib/types'; 
+
+type FetchState<T> = {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+};
+
+// Define the return type based on the 'type' param
+type UseCategoriesReturnType<T> = 
+  T extends 'all' | 'top' ? Category[] : // If type is 'all' or 'top', expect Category[] 
+  T extends 'byCategory' ? ProductsType[] : // If type is 'byCategory', expect ProductsType[]
+  T extends 'singleProduct' | 'singleProductNoncategory' ? ProductsType : // If type is 'singleProduct' or 'singleProductNoncategory', expect a single ProductsType
+  never;
+
+export const useCategories = (
+  type: 'all' | 'top' | 'byCategory' | 'singleProduct' | 'singleProductNoncategory' = 'all', 
+  categoryId?: string, 
+  productId?: string
+) => {
+  const [state, setState] = useState<FetchState<UseCategoriesReturnType<typeof type>>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setState((prevState) => ({ ...prevState, loading: true, error: null })); // Avoid using previous state directly
+
+        let data;
+
+        // Fetch based on type
+        if (type === 'all') {
+          data = await fetchCategories();
+        } else if (type === 'top') {
+          data = await fetchTopCategories();
+        } else if (type === 'byCategory' && categoryId) {
+          data = await fetchProductsByCategory(Number(categoryId));
+        } else if (type === 'singleProduct' && productId) {
+          data = await fetchProductWithCategory(Number(productId));
+        } else if (type === 'singleProductNoncategory' && productId) {
+          data = await fetchProductDetails(Number(productId)); // This fetches a product without a category
+        } else {
+          throw new Error('Invalid parameters');
+        }
+
+        setState({ data, loading: false, error: null });
+      } catch (error) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }));
+      }
+    };
+
+    fetchData();
+  }, [type, categoryId, productId]); // Dependency array ensures the hook fetches data when the type or id changes
+
+  // Memoizing data based on the type fetched
+  const memoizedData = useMemo(() => {
+    if (type === 'all' || type === 'top') {
+      return state.data as Category[]; // Memoize categories
+    }
+    if (type === 'byCategory' || type === 'singleProduct' || type === 'singleProductNoncategory') {
+      return state.data as ProductsType[]; // Memoize products
+    }
+    return state.data;
+  }, [state.data, type]);
+
+  return { ...state, data: memoizedData }; // Return memoized data, loading, and error state
+};

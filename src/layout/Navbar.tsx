@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Category } from '@/lib/types';
 
-
 interface NavbarProps {
   categories: Category[]; // Add categories prop
   onCategoryChange: (categoryId: string) => void; // Add callback for category selection
@@ -25,10 +24,11 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
   // Check if the current route is active
   const isActive = (path: string) => pathname === path;
 
-  // Handle category selection
+  // Handle category selection and redirect to the category page
   const handleCategoryClick = (categoryId: string) => {
-    onCategoryChange(categoryId); // Notify parent component of category change
     setIsDropdownOpen(false); // Close the dropdown
+    // Redirect to category page
+    window.location.href = `/products/category/${categoryId}`;
   };
 
   // Close the dropdown if the user clicks outside of it
@@ -45,17 +45,16 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
     };
   }, []);
 
-
   return (
     <nav className="bg-gray-800 p-4 text-white shadow-lg">
-    <div className="container mx-auto flex justify-between items-center">
-      {/* Homepage */}
-      <Link href="/" className="text-2xl font-semibold text-white hover:text-gray-300">
-        ShopSmart
-      </Link> 
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Homepage */}
+        <Link href="/" className="text-2xl font-semibold text-white hover:text-gray-300">
+          ShopSmart
+        </Link>
 
-    {/* Shop by Category Dropdown */}
-    <div className="relative">
+        {/* Shop by Category Dropdown */}
+        <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className={`${isActive('/products') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}
@@ -73,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => handleCategoryClick(category.id.toString())}
+                  onClick={() => handleCategoryClick(category.id.toString())} // Navigate to the category page
                   className="block w-full px-4 py-2 text-left hover:bg-gray-100"
                   role="menuitem"
                 >
@@ -84,48 +83,35 @@ const Navbar: React.FC<NavbarProps> = ({ categories, onCategoryChange }) => {
           )}
         </div>
 
-      {/* Products*/}
-      <Link
-          href="/products"
-          className={`${isActive('/products') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}
-        >
+        {/* Other Links */}
+        <Link href="/products" className={`${isActive('/products') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}>
           Products
         </Link>
         {isAuthenticated && (
-            <Link href="/checkout" className={`${isActive('/checkout') ? 'text-gray-300' : 'hover:text-gray-300'}`}>
-              Checkout
-            </Link>
+          <Link href="/checkout" className={`${isActive('/checkout') ? 'text-gray-300' : 'hover:text-gray-300'}`}>
+            Checkout
+          </Link>
         )}
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">
             <span className="text-gray-300">Welcome, {user?.name}!</span>
-            <button
-              onClick={handleLogout}
-              className="text-gray-300 hover:text-gray-400 transition duration-300"
-            >
+            <button onClick={handleLogout} className="text-gray-300 hover:text-gray-400 transition duration-300">
               Logout
             </button>
           </div>
         ) : (
           <div className="flex items-center space-x-4">
-            <Link
-              href="/login"
-              className={`${isActive('/login') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}
-            >
+            <Link href="/login" className={`${isActive('/login') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}>
               Login
             </Link>
-            <Link
-              href="/signup"
-              className={`${isActive('/signup') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}
-            >
+            <Link href="/signup" className={`${isActive('/signup') ? 'text-gray-300' : 'hover:text-gray-300'} transition duration-300`}>
               Sign Up
             </Link>
           </div>
         )}
       </div>
-    {/* /</div> */}
-  // </nav>
-);
+    </nav>
+  );
 };
 
 export default Navbar;

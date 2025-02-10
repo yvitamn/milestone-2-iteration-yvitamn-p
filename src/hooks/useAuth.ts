@@ -19,6 +19,10 @@ export const useAuth = () => {
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Error parsing user data:', error);
+        // Clear invalid data from localStorage
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuthenticated(false);
       }
     }
   }, []);
@@ -27,8 +31,9 @@ export const useAuth = () => {
   const handleLogin = async (credentials: LoginCredentials) => {
     try {
       const { user } = await login(credentials); // Use the login function from api.ts
-      // If user is undefined, set it to null, else save the actual user object
-      //const userToStore = user ?? null;
+      if (!user) {
+        throw new Error('User data is undefined');
+      }
       localStorage.setItem('user', JSON.stringify(user as User));
       setUser(user as User);
       setIsAuthenticated(true);
@@ -43,7 +48,9 @@ export const useAuth = () => {
 const handleSignup = async (data: RegisterData) => {
   try {
     const { user } = await register(data); // Use the register function from api.ts
-   // const userToStore = user ?? null;
+    if (!user) {
+      throw new Error('User data is undefined');
+    }
     localStorage.setItem('user', JSON.stringify(user as User));
     setUser(user as User);
     setIsAuthenticated(true);
