@@ -32,11 +32,7 @@ export interface ProductsType {
     statusCode?: number;
   }
 
-  
-export interface AuthResponse {
-  token: boolean;
-  user: User;
-  }
+ 
   
   export interface LoginCredentials {
     email: string;
@@ -47,31 +43,70 @@ export interface AuthResponse {
     name: string;
   }
   
- 
-  
+   
  // User type for registration and login
   export interface User {
     id: number;
     email: string;
-    password: string; // Only for registration
-    name: string;
-    
+    //cart: CartItem[]; 
+    name: string; 
 } 
-  
-  // Login response type
-  export interface LoginResponse {
-    //access_token: string;
-    user: User;
+ 
+export interface AuthResponse {
+  access_token: string;
+  // token_type: string;
+  // expires_in: number;
   }
   
-  
-  
-  // // API Error type
-  // export interface ApiErrorData {
-  //   message: string;
-  //   statusCode?: number;
+  // export interface CheckoutFormData {
+  //   email: string;
+  //   name: string;
+  //   address: string;
+  //   city: string;
+  //   country: string;
+  //   postalCode: string;
+  //   cardNumber: string;
+  //   cardExpiry: string;
+  //   cardCvc: string;
   // }
   
+  // export interface ApiErrorData {
+  //   message?: string;
+  //   details?: string;
+  // }
+  
+  // export interface OrderItem {
+  //   id: number;
+  //   productId: number;
+  //   quantity: number;
+  //   price: number;
+  //   product: ProductsType;
+  // }
+  
+
+  // export interface Order {
+  //   id: number;
+  //   userId: number;
+  //   items: OrderItem[];
+  //   status: string;
+  //   total: number;
+  //   shipping: number;
+  //   tax: number;
+  //   createdAt: string;
+  //   updatedAt: string;
+  //   shippingAddress?: {
+  //     street: string;
+  //     city: string;
+  //     state: string;
+  //     country: string;
+  //     zipCode: string;
+  //   };
+  //   paymentMethod?: {
+  //     type: string;
+  //     lastFour?: string;
+  //     expiryDate?: string;
+  //   };
+  // }
 
 // Interface for CartModal props
 export interface CartModalProps {

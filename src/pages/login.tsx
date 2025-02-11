@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 
 const Login: React.FC = () => {
-  const { isAuthenticated, login } = useAuth(); // Access auth functions
+  const { login } = useAuth(); // Access auth functions
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -17,10 +17,8 @@ const Login: React.FC = () => {
       setError('Please enter both email and password');
       return;
     }
-  
-
-  setIsLoading(true);
-   // setError('');
+   setIsLoading(true);
+   setError('');
 
     try {
       await login({ email, password }); // Use login function from context

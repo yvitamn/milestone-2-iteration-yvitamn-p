@@ -1,14 +1,15 @@
-import { apiLogin, apiRegister } from '@/lib/api';
+import { apiLogin, apiRegister, ApiError} from '@/lib/api';
 import { useState, useEffect, ReactNode } from 'react';
 import { AuthContext, AuthContextType } from '@/lib/contexts/AuthContext';  // Import the context
-import { User, LoginCredentials, RegisterData } from '@/lib/types';
+import { User, AuthResponse, LoginCredentials, RegisterData } from '@/lib/types';
 import useUserData from '@/hooks/useUserData'; 
 
 // Provider component that wraps the app and provides authentication state
 export const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  //const [token, setToken] = useState<string | null>(null); 
+  const [token, setToken] = useState<string | null>(null); 
   const [user, setUser] = useState<User | null>(null);
+  //setUser(response.user);
 
 // Using useUserData hook to fetch user data based on token
 const { user: fetchedUser, loading, error } = useUserData(isAuthenticated);
@@ -36,61 +37,95 @@ useEffect(() => {
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       setUser(null);
+      setToken(null);
       setIsAuthenticated(false);
     }
   }
 }, []);
 
 
-  // Login function that stores user info in localStorage
-    const handleLogin = async (credentials: LoginCredentials) => {
-      try {
-        const response = await apiLogin(credentials); // Use the login function from api.ts
-        if (!response.user) {
-          throw new Error('User data is undefined');
-        }
-        localStorage.setItem('user', JSON.stringify(user as User));
-        setUser(response.user);
-        setIsAuthenticated(true);
-     // Handle the case when user is undefined (optional)
-      } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
+const handleLogin = async ({ email, password }: LoginCredentials) => {
+    try {
+      const authResponse: AuthResponse = await apiLogin({ email, password });
+
+      // Check for required fields in the response
+      if (!authResponse.access_token) {
+        throw new Error('Access token is missing in the response');
       }
-    };
-  
-  // Signup function that stores user info in localStorage
+
+      const user: User = {
+        id: authResponse.id || 0, // Default value if id is missing
+        name: authResponse.name,
+        email: authResponse.email || '',
+      };
+
+      localStorage.setItem('token', authResponse.access_token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      setUser(user);
+      setToken(authResponse.access_token);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Login failed:', error);
+      // Handle API-specific error responses
+      if (error instanceof ApiError) {
+        console.error(`API Error: ${error.message} (Code: ${error.code})`);
+      }
+      throw new Error('Login failed');
+    }
+  };
+
+  // Handle signup function
   const handleSignup = async (data: RegisterData) => {
     try {
-      const { user } = await apiRegister(data); // Use the register function from api.ts
-      if (!user) {
-        throw new Error('User data is undefined');
+      const authResponse: AuthResponse = await apiRegister(data);
+
+      // Check for required fields in the response
+      if (!authResponse.access_token) {
+        throw new Error('Access token is missing in the response');
       }
+
+      const user: User = {
+        id: authResponse.id || 0,
+        name: authResponse.name,
+        email: authResponse.email || '',
+      };
+
+      localStorage.setItem('token', authResponse.access_token);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', 'true');
+
       setUser(user);
+      setToken(authResponse.access_token);
       setIsAuthenticated(true);
-      // Handle the case when user is undefined (optional)
     } catch (error) {
       console.error('Signup failed:', error);
+      // Handle API-specific error responses
+      if (error instanceof ApiError) {
+        console.error(`API Error: ${error.message} (Code: ${error.code})`);
+      }
       throw error;
     }
   };
+
 
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
+    setToken(null);
   };
 
   // Define the authContextValue using AuthContextType
   const authContextValue: AuthContextType = {
     isAuthenticated, 
     user, 
+    token,
     login:handleLogin, 
     signup:handleSignup, 
-    logout
+    logout,
+    //error
+    
   };
 
   return (

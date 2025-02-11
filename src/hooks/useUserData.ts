@@ -1,35 +1,29 @@
 import { useState, useEffect } from 'react';
+import { User } from '@/lib/types';
+import { fetchUserData } from '@/lib/api';
+
 
 const useUserData = (isAuthenticated: boolean) => {
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch('https://api.escuelajs.co/api/v1/users/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const data = await res.json();
-        setUser(data);
-      } catch (err) {
-        setError('Failed to fetch user data');
-      } finally {
-        setLoading(false);
+    if (isAuthenticated) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetchUserData(token)
+          .then((data) => {
+            if ('message' in data) {
+              setError(data.message);
+            } else {
+              setUser(data.user);
+            }
+          })
+          .catch(() => setError('Failed to fetch user data'))
+          .finally(() => setLoading(false));
       }
-    };
-
-    fetchUserData();
+    }
   }, [isAuthenticated]);
 
   return { user, loading, error };

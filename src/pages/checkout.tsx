@@ -10,13 +10,14 @@ import { fetchUserData } from '@/lib/apiUser';
 
 interface CheckoutPageProps {
     userCheckout: User;  
+    error?: string;
   }
     
 
 //Server-side authentication check using `getServerSideProps`
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const token = context.req.cookies['auth-token'];
-    if (!token || token !== 'true') {
+    if (!token) {
         return {
           redirect: {
             destination: '/login',
@@ -51,14 +52,17 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
     const [paymentMethod, setPaymentMethod] = useState<string>(''); // State for selected payment method
     const [error, setError] = useState<string | null>(null);
     const [orderSuccess, setOrderSuccess] = useState<boolean>(false); // Track order success
-    //const { token } = useAuth();
-    //const { user, loading, error } = useUserData(token);
+    const [checkoutError, setCheckoutError] = useState<string | null>(null); 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();// To navigate after checkout
 
   // Calculate total price
   const calculateTotalPrice = () => {
-    return addedProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+    return addedProducts.reduce(
+        (total, product) => 
+            total + product.price * product.quantity, 
+        0
+    );
  
 };
 
@@ -71,13 +75,14 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
 
  
 
-  const handleCheckout = async () => { 
+  const handleCheckout = async () => {
+    
       if (!paymentMethod) {
-        setError('Please select a payment method.');
+        setCheckoutError('Please select a payment method.');
         return;
     }
     setIsLoading(true);
-
+    setCheckoutError(null); 
 
     try {
         const checkoutSuccess = true;  // Simulate checkout success
@@ -94,6 +99,7 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
     };
 
 
+
   const handleContinueShopping = () => {
     router.push('/products'); // Navigate to the products page (or any other page you want)
   };
@@ -106,7 +112,7 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-4xl font-bold mb-6 text-center">Checkout</h2>
-
+      {error && <p className="text-red-500 text-center">{error}</p>}
       {userCheckout && (
         <p className="text-lg text-center">Hello, {userCheckout.name}!</p>
       )}
@@ -150,7 +156,7 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
 
               {error && <p className="text-red-500 mb-4">{error}</p>}
 
-
+              {checkoutError && <p className="text-red-500 mb-4">{checkoutError}</p>}
               <div className="flex justify-center">
               <button
                 onClick={handleCheckout}

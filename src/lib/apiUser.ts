@@ -3,27 +3,24 @@ import { AuthResponse, ApiErrorData } from '@/lib/types';
 const BASE_URL = "https://api.escuelajs.co/api/v1";
 
 
-export const fetchUserData = async (token: string): Promise<AuthResponse | ApiErrorData> => {
+export const fetchUserData = async (accessToken: string) => {
     try {
-      const res = await fetch(`${BASE_URL}/users/me`, {
+      const response = await fetch('/api/user', {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
-  
-      if (!res.ok) {
-        const errorData: ApiErrorData = await res.json();
-        return errorData;  // Return the error data if the response is not OK
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
       }
   
-      // If the response is OK, parse the user data
-      const data: AuthResponse = await res.json();
-      return data;  // Return the user data if the response is successful
+      const userData = await response.json();
+      return userData; // Return user data
     } catch (error) {
-      return {
-        message: 'Failed to fetch user data.',
-        statusCode: 500,
-      };
+      console.error('Error fetching user data:', error);
+      throw error; // Throw error to be handled in the calling function
     }
   };
   

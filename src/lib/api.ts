@@ -152,8 +152,6 @@ export const fetchProductDetails = async (id: string): Promise<Product> => {
 }
   
 
-
-
   // Function to log in a user
   export async function apiLogin(credentials: LoginCredentials): Promise<AuthResponse> {
    try{
