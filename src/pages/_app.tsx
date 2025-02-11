@@ -3,26 +3,26 @@ import type { AppProps } from 'next/app';
 import { AuthenticateProvider } from '@/lib/contexts/AuthenticateProvider';
 import { CartProvider } from '@/lib/contexts/CartProvider';
 import  Layout from '@/components/Layout';
-//import { ModalProvider } from '@/lib/contexts/ModalContext';
+//import withPrivateRoute from '@/lib/hoc/withPrivateRoute';
 import '@/styles/globals.css'; 
-import React, { Suspense } from 'react';
+import React from 'react';
 
 
 function MyApp({ Component, pageProps }: AppProps) {
-  //const userSession = getUserSession(null);
+  //const ProtectedComponent = withPrivateRoute(Component);
   
   return (
     <AuthenticateProvider>     
       <CartProvider>
       {/* <ModalProvider> */}
          {/* Use Suspense to handle the fallback UI while Layout is loading */}
-         <Suspense fallback={<div>Loading...</div>}>
+         {/* <Suspense fallback={<div>Loading...</div>}> */}
       <Layout>
      
         <Component {...pageProps} />
       
       </Layout>
-      </Suspense>
+      {/* </Suspense> */}
       {/* </ModalProvider> */}
       </CartProvider>
       

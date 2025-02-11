@@ -1,32 +1,29 @@
 
 // Frontend representation of a product
 export interface ProductsType {
-    id: number | string ;
+    id: string | number ;
     title: string;
     description: string;
     price: number;
-    images: string[]; 
-    category: Category;
+    imageUrl: string; 
+    //category: Category;
     quantity: number;
   }
  
 
-// Category information
-export interface Category {
-    id: number | string ;
-    name: string;
-    description?: string;
-    image?: string; // URL of the category image
+// // Category information
+// export interface Category {
+//     id: number | string ;
+//     name: string;
+//     description?: string;
+//     image?: string; // URL of the category image
 
-  }
+//   }
 
-  export interface CategoryTopCategories {
-  id: number | string;
-  name: string;
-  description?: string;
-  image?: string;
-  products: ProductsType[];  // List of products for the category
-}
+//   export interface categoryWithProducts{
+//   category: Category;
+//   products: ProductsType[];  // List of products for the category
+// }
 
 
   
@@ -37,7 +34,7 @@ export interface Category {
 
   
 export interface AuthResponse {
-  success: boolean;
+  token: boolean;
   user: User;
   }
   
@@ -67,12 +64,7 @@ export interface AuthResponse {
     user: User;
   }
   
-  // Statistics type
-  export interface Stats {
-    totalProducts: number;
-    totalOrders: number;
-    totalRevenue: number;
-  }
+  
   
   // // API Error type
   // export interface ApiErrorData {
@@ -110,15 +102,23 @@ export interface CartModalProps {
 //   }
   
 
-  // Custom API Error class
-// export class ApiError extends Error {
-//     constructor(
-//       public status: number,
-//       message: string,
-//       public data?: Record<string, unknown>
-//     ) {
-//       super(message);
-//       this.name = "ApiError";
-//     }
-//   }
+  //Custom API Error class
+export class ApiError extends Error {
+    // constructor(
+    //   public status: number,
+    //   message: string,
+    //   public data?: Record<string, unknown>
+    // ) {
+    //   super(message);
+    //   this.name = "ApiError";
+    // }
+
+    statusCode: number;
+
+    constructor(statusCode: number, message: string) {
+        super(message);
+        this.statusCode = statusCode;
+        this.name = 'ApiError';
+    }
+  }
 

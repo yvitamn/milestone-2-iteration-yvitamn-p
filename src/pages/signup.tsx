@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '@/components/Layout';
+
 
 
 const Signup: React.FC = () => {
@@ -17,7 +17,7 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       setError('Please fill in all fields');
       return;
     }
@@ -36,7 +36,7 @@ const Signup: React.FC = () => {
 
 
   return (
-    <Layout>
+    
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white p-6 rounded shadow-md w-80">
           <h1 className="text-2xl font-semibold mb-4 text-center">Sign Up</h1>
@@ -91,7 +91,7 @@ const Signup: React.FC = () => {
           </p>
         </div>
       </div>
-    </Layout>
+  
   );
 };
 

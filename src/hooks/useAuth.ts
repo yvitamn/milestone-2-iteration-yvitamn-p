@@ -13,7 +13,7 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthenticateProvider');
   }
 
-  const { isAuthenticated, user, login, logout } = authContext;
+  const { isAuthenticated, user, login, logout, signup } = authContext;
 
   // const handleLogin = (credentials: LoginCredentials) => {
   //   return login(credentials);
@@ -23,5 +23,5 @@ export const useAuth = () => {
   //   return logout();
   // };
 
-  return { isAuthenticated, user, login, logout };
+  return { isAuthenticated, user, login, logout,signup };
 };
