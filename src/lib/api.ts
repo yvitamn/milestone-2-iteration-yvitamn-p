@@ -56,8 +56,16 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data  = await response.json(); // Inline the type
-
+    const data: {
+      id: string | number;
+      title: string;
+      description: string;
+      price: number;
+      images: string[]; 
+      //category: { id: string | number; name: string; image: string };
+      
+    }[]  = await response.json(); // Inline the type
+    console.log('Fetched products:', data); 
 
    // Ensure that the response is an array and has the necessary properties
    if (
