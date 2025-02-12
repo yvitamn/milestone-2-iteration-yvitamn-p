@@ -68,7 +68,10 @@ const ProductsPage = ({ product }: ProductsPageProps) => {
                 <img
                   src={product.imageUrl}
                   alt={product.title}
-                  className="product-image w-full h-64 object-cover rounded-lg mb-4 shadow-md"
+                  width={500}
+                  height={400}
+                  className="rounded-lg"
+                  // className="product-image h-64 object-cover rounded-lg mb-4 shadow-md"
                 />
                 <div className="p-4">
                   <h2 className="product-title text-2xl font-semibold text-gray-800 mb-2">{product.title}</h2>
