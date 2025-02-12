@@ -117,9 +117,9 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
     <div className="container mx-auto p-6">
       <h2 className="text-4xl font-bold mb-6 text-center">Checkout</h2>
       {errorUserData && <p className="text-red-500 text-center">{errorUserData}</p>}
-      {userCheckout && (
+      
         <p className="text-lg text-center">Hello, {userFetched?.name}!</p>
-      )}
+     
       {/* Check if lastPurchase exists */}
       {user?.lastPurchase && user.lastPurchase.length > 0 ? (
         <p>Last Purchase: {user.lastPurchase[0].name} for ${user.lastPurchase[0].price}</p>

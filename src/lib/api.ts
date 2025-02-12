@@ -106,6 +106,7 @@ export const fetchProductDetails = async (id: string): Promise<ProductsType> => 
     }
 
     const data = await response.json();
+    console.log('Fetched products detail:', data); 
 
      // Ensure that the response contains valid product data
      if (

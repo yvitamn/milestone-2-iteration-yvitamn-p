@@ -3,11 +3,8 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { fetchProductDetails, fetchProducts } from '@/lib/api'; // Fetch single product by ID
 import { ProductsType } from '@/lib/types';
-//import { ProductDetail } from '@/components/ProductDetail';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { useCart } from '@/hooks/useCart';
-
+import { useState, useEffect } from 'react';
 
 // This will fetch all product IDs during build time
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -38,9 +35,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
       console.error('Error fetching product details:', error);
     }
   
-    if (!product) {
-      return { notFound: true }; // Return a 404 page if the product doesn't exist
-    }
+    // Ensure product is explicitly set to null if not found
+  if (!product) {
+    return { 
+      props: {
+        product: null, // Make sure to return null here
+      },
+      revalidate: 60, // Optional: Incremental Static Regeneration every 60 seconds
+    };
+  }
   
     return {
       props: {
@@ -52,55 +55,43 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 interface ProductDetailProps {
   onAddToCart: () => void;
- 
+  product: ProductsType | null; 
 }
 
-const ProductDetailPage = ({ onAddToCart }: ProductDetailProps) => {
-    const router = useRouter();
-    const { id } = router.query;
+const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
+    const [isAdding, setIsAdding] = useState<boolean>(false);
     const { addProductToCart } = useCart();
-    const [product, setProduct] = useState<ProductsType | null>(null);  // Using any or Product if the type is defined
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    //const [productDetail, setProductDetail] = useState<ProductsType | null>(null);
 
-  // Fetch product details from API
+    // If product is not found, show error message
   useEffect(() => {
-    if (id) {
-        const fetchDetails = async () => {
-            setLoading(true); // Start loading
-            try {
-              const data = await fetchProductDetails(id as string);
-              setProduct(data); // Assuming `fetchProductDetails` returns the full product data
-              setError(null); // Reset error if data is fetched successfully
-            } catch (error) {
-              console.error('Error fetching product details:', error);
-              setError('Failed to load product details. Please try again later.');
-              setProduct(null); // No product if there's an error
-            } finally {
-              setLoading(false); // End loading
-        }
-      };
-      fetchDetails();
+    if (!product) {
+      setError('Product not found');
     }
-  }, [id]);
+  }, [product]);
 
   // Handler to add product to cart and open the modal
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (product) {
-        
-      addProductToCart(product);  // Directly add the entire product object
-      onAddToCart(); // Open the modal when product is added
+      setIsAdding(true); // Set loading state to true before adding
+      try {
+        await addProductToCart(product);  // Assuming `addProductToCart` might be an async function
+        setIsAdding(false);  // Set loading state to false once product is added
+        onAddToCart();  // Trigger the modal to show after product is added
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+        setIsAdding(false); // Set loading state to false even if there's an error
+      }
     }
   };
   
-  // Loading and error states
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+
+  
+    if (!product) {
+      return <div>Product not found</div>;
+    }
+
   
   if (error) {
     return (
@@ -145,7 +136,7 @@ const ProductDetailPage = ({ onAddToCart }: ProductDetailProps) => {
 
     <button
       onClick={handleAddToCart}
-      disabled={!product} // Disable if product is not loaded
+      disabled={isAdding} // Disable if product is not loaded
       className="bg-blue-500
                 text-white py-2 
                 px-6 rounded-md
@@ -156,8 +147,8 @@ const ProductDetailPage = ({ onAddToCart }: ProductDetailProps) => {
                 role="button"
                 tabIndex={0}
     >
-      Add to Cart
-    </button>
+     {isAdding ? 'Adding...' : 'Add to Cart'} {/* Display "Adding..." when loading */}
+     </button>
       
     </div>
 
