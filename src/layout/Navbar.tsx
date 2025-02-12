@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout(); // Call the logout function from context
     // You can also clear local storage or token if you're saving it
-    localStorage.removeItem('token');
+  //  localStorage.removeItem('token');
   };
   
 
