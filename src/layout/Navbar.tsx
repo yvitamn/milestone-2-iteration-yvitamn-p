@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, userLogin, logout } = useAuth(); // Access user and authentication state
+  const { userLogin, logout } = useAuth(); // Access user and authentication state
   const pathname = usePathname(); // To track the current route
 
   const handleLogout = () => {
@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
               >
                 Products
               </Link>
-          {isAuthenticated ? (
+          {/* {isAuthenticated ? ( */}
             <>
              
               <Link
@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
                 Logout
               </button>
             </>
-          ) : (
+          {/* ) : ( */}
             <>
               <Link
                 href="/login"
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
                 Sign Up
               </Link>
             </>
-          )}
+          {/* )} */}
         </div>
       </div>
     </nav>

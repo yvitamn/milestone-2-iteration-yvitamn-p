@@ -87,9 +87,9 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
       title: product.title,
       description: product.description,
       price: product.price,
-      imageUrl: Array.isArray(product.images)// Use the first image in the images array
-      ? product.images[0] 
-      : JSON.parse(product.images)[0],
+      imageUrl:product.images[0],// Use the first image in the images array
+      // ? product.images[0] 
+      // : JSON.parse(product.images)[0],
       quantity: 1, // Set default quantity to 1
     }));
   } catch (error) {
@@ -99,7 +99,7 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
 };
 
 // Function to fetch a single product by ID
-export const fetchProductDetails = async (id: string): Promise<ProductsType> => {
+export const fetchProductDetails = async (id: string): Promise<ProductsType | null> => {
   try {
     const response = await fetch(`${BASE_URL}/products/${id}`);
 
@@ -126,7 +126,7 @@ export const fetchProductDetails = async (id: string): Promise<ProductsType> => 
       description: data.description,
       price: data.price,
       quantity: 1, // Set default quantity to 1
-      imageUrl: JSON.parse(data.images)[0], // Use imageUrl as per your interface
+      imageUrl: data.images[0], // Use imageUrl as per your interface
     };
   } catch (error) {
     console.error("Error fetching product details:", error);

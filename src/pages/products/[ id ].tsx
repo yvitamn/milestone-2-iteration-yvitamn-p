@@ -6,13 +6,25 @@ import { ProductsType } from '@/lib/types';
 import { useCart } from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 
+
+interface ProductDetailProps {
+    onAddToCart: () => void;
+    product: ProductsType | null; 
+  }
+
 // This will fetch all product IDs during build time
 export const getStaticPaths: GetStaticPaths = async () => {
     try {
       const products = await fetchProducts();
+      console.log('Products fetched in getStaticPaths:', products); // Debugging
+
+      if (!Array.isArray(products)) {
+        throw new Error('Products data is not an array');
+      }
       const paths = products.map((product) => ({
         params: { id: product.id.toString() },
       }));
+      console.log('Generated paths:', paths); 
   
       return {
         paths,
@@ -28,38 +40,38 @@ export const getStaticPaths: GetStaticPaths = async () => {
   export const getStaticProps: GetStaticProps = async ({ params }) => {
     const { id } = params || {};  // Get the ID parameter
     
-  
-    let product: ProductsType | null = null;
-    try {
-        if(id){
-      product = await fetchProductDetails(id.toString()); // Fetch product by ID
+    if (!id) {
+        console.error('ID is missing in params:', params);
+        return {
+          notFound: true, // Return 404 if `id` is missing
+        };
+      }
+    
+      try {
+        const product = await fetchProductDetails(id.toString()); // Fetch product details by ID
+        console.log('Product fetched in getStaticProps:', product);
+        if (!product) {
+            console.error('Product not found for ID:', id); 
+          return {
+            notFound: true, // Return 404 if product is not found
+          };
         }
-    } catch (error) {
-      console.error('Error fetching product details:', error);
-    }
-  
-    // Ensure product is explicitly set to null if not found
-  if (!product) {
-    return { 
-      props: {
-        product: null, // Make sure to return null here
-      },
-      revalidate: 60, // Optional: Incremental Static Regeneration every 60 seconds
-    };
-  }
   
     return {
       props: {
         product,
       },
-      revalidate: 60, // Optional: Incremental Static Regeneration every 60 seconds
+      revalidate: 60, // Enable Incremental Static Regeneration (ISR) every 60 seconds
     };
-  };
+  } catch (error) {
+    console.error('Error fetching product details:', error);
+    return {
+      notFound: true, // Return 404 if there's an error
+    };
+  }
+};
 
-interface ProductDetailProps {
-  onAddToCart: () => void;
-  product: ProductsType | null; 
-}
+
 
 const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
     const [isAdding, setIsAdding] = useState<boolean>(false);
