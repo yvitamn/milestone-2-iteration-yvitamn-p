@@ -25,12 +25,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
   
   // Fetch the product details at build time
-  export const getStaticProps: GetStaticProps = async (context) => {
-    const { id } = context.params as { id: string };
+  export const getStaticProps: GetStaticProps = async ({ params }) => {
+    const { id } = params || {};  // Get the ID parameter
+    
   
-    let product = null;
+    let product: ProductsType | null = null;
     try {
-      product = await fetchProductDetails(id); // Fetch product by ID
+        if(id){
+      product = await fetchProductDetails(id.toString()); // Fetch product by ID
+        }
     } catch (error) {
       console.error('Error fetching product details:', error);
     }

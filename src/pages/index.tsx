@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link'; 
-import { fetchProducts as fetchProductsFromAPI } from '@/lib/api';
+import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 
@@ -9,47 +9,21 @@ interface HomePageProps {
   product: ProductsType[]; 
 }
 
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   let products: ProductsType[] = [];
-//   try {
-//     products = await fetchProductsFromAPI(); // Fetch all products
-//   } catch (error) {
-//     console.error('Error fetching products:', error);
-//     products = []; // Ensure an empty array if the fetch fails
-//   }
-
-//   // Generate the paths for each product ID
-//   const paths = products.map((product) => ({
-//     params: { id: product.id.toString() }, // Ensure that the id is a string
-//   }));
-
-//   return {
-//     paths,
-//     fallback: 'blocking', // or 'false' depending on your needs
-//   };
-// };
-
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params || {};  // Get the ID parameter
-  let product = null ;
-
+ 
+  let product: ProductsType[] = [];
   try {
-    const allProducts = await fetchProductsFromAPI();
-    product = allProducts.find((prod) => prod.id.toString() === id) || null; // Find the product by ID
+    // Fetch all products
+    product = await fetchProducts();  // This will return an array of all products
   } catch (error) {
-    console.error('Error fetching the product:', error);
-    product = null;
+    console.error('Error fetching products:', error);
   }
 
-  // Ensure product is not undefined
-  if (product === undefined) {
-    product = null;
-  }
   return {
     props: {
-      product,
+      product,  // Pass the products array as props to the page
     },
+    revalidate: 60,  // Optional: If you want Incremental Static Regeneration every 60 seconds
   };
 };
 
@@ -66,13 +40,14 @@ const HomePage = ({ product }: HomePageProps) => {
 
      // If product is not found, show error message
      useEffect(() => {
+      console.log('Product in useEffect:', product); 
       if (!product) {
         setError('Product not found');
         setIsLoading(false);  
         return;     
       }
       //add single product if needed
-      setProductsHome([product]);
+      setProductsHome(product);
       setIsLoading(false); 
     }, [product]);
 

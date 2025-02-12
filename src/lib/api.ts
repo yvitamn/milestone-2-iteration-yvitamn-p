@@ -87,7 +87,9 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
       title: product.title,
       description: product.description,
       price: product.price,
-      imageUrl: product.images[0], // Use the first image in the images array
+      imageUrl: Array.isArray(product.images)// Use the first image in the images array
+      ? product.images[0] 
+      : JSON.parse(product.images)[0],
       quantity: 1, // Set default quantity to 1
     }));
   } catch (error) {
@@ -124,7 +126,7 @@ export const fetchProductDetails = async (id: string): Promise<ProductsType> => 
       description: data.description,
       price: data.price,
       quantity: 1, // Set default quantity to 1
-      imageUrl: data.images[0], // Use imageUrl as per your interface
+      imageUrl: JSON.parse(data.images)[0], // Use imageUrl as per your interface
     };
   } catch (error) {
     console.error("Error fetching product details:", error);

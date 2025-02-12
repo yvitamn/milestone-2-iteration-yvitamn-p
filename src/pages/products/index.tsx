@@ -1,60 +1,33 @@
 'use client';
-//import { GetStaticProps } from 'next';
-import { fetchProducts as fetchProductsFromAPI} from '@/lib/api'; // Fetch products from the API
+
+import { fetchProducts} from '@/lib/api'; // Fetch products from the API
 import { ProductsType } from '@/lib/types';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { GetStaticProps, GetStaticPaths} from 'next';
+import { GetStaticProps } from 'next';
 
 
 interface ProductsPageProps {
-  product: ProductsType [];
+  product: ProductsType[];
 }
 
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   let products: ProductsType[] = [];
-//   try {
-//     products = await fetchProductsFromAPI(); // Fetch all products
-//   } catch (error) {
-//     console.error('Error fetching products:', error);
-//     products = []; // Ensure an empty array if the fetch fails
-//   }
-
-//   // Generate the paths for each product ID
-//   const paths = products.map((product) => ({
-//     params: { id: product.id.toString() }, // Ensure that the id is a string
-//   }));
-
-//   return {
-//     paths,
-//     fallback: 'blocking', // or 'false' depending on your needs
-//   };
-//  };
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params || {};  // Get the ID parameter
-  let product = null ;
-
+export const getStaticProps: GetStaticProps = async () => {
+ 
+  let product: ProductsType[] = [];
   try {
-    const allProducts = await fetchProductsFromAPI();
-    product = allProducts.find((prod) => prod.id.toString() === id) || null; // Find the product by ID
+    // Fetch all products
+    product = await fetchProducts();  // This will return an array of all products
   } catch (error) {
-    console.error('Error fetching the product:', error);
-    product = null;
+    console.error('Error fetching products:', error);
   }
 
-  // Ensure product is not undefined
-  if (product === undefined) {
-    product = null;
-  }
   return {
     props: {
-      product,
+      product,  // Pass the products array as props to the page
     },
+    revalidate: 60,  // Optional: If you want Incremental Static Regeneration every 60 seconds
   };
 };
-
 
 const ProductsPage = ({ product }: ProductsPageProps) => {
   const [productsList, setProductsList] = useState<ProductsType[]>([]); // Products state
@@ -63,13 +36,13 @@ const ProductsPage = ({ product }: ProductsPageProps) => {
 
   // If product is not found, show error message
   useEffect(() => {
-    if (!product) {
+    if (!product || product.length === 0) {
       setError('Product not found');
       setIsLoading(false);  
       return;     
     }
     //add single product if needed
-    setProductsList([product]);
+    setProductsList(product);
     setIsLoading(false); 
   }, [product]);
 
