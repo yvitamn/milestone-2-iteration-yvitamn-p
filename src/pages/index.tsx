@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image'
 import { useState, useEffect } from 'react';
 import Link from 'next/link'; 
 import { fetchProducts } from '@/lib/api';
@@ -88,10 +89,18 @@ const HomePage = ({ product }: HomePageProps) => {
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Product Page</h1>
 
       {productsHome.length > 0 && (
+        
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-semibold text-gray-700">{productsHome[0].title}</h2>
-          <p className="text-lg text-gray-600 mt-2">{productsHome[0].description}</p>
-          <p className="text-xl font-bold text-green-600 mt-2">${productsHome[0].price}</p>
+          <Image
+                src={productsHome[0].imageUrl}
+                alt={productsHome[0].title}
+                width={500}
+                height={400}
+               className="rounded-lg"
+                />
+          // <h2 className="text-2xl font-semibold text-gray-700">{productsHome[0].title}</h2>
+          {/* <p className="text-lg text-gray-600 mt-2">{productsHome[0].description}</p> */}
+          {/* <p className="text-xl font-bold text-green-600 mt-2">${productsHome[0].price}</p> */}
         </div>
       )}
 
@@ -108,9 +117,19 @@ const HomePage = ({ product }: HomePageProps) => {
             <div
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
             >
-              <h3 className="text-xl font-semibold text-gray-800">{product.title}</h3>
+              <div className="relative w-full h-64 mb-4">
+              <Image
+                src={product.imageUrl[0]}
+                alt={product.title}
+                width={500}
+                height={400}
+               className="rounded-lg"
+                // className="w-full h-128 object-cover mb-4 rounded"
+              />
+            </div>
+              {/* <h3 className="text-xl font-semibold text-gray-800">{product.title}</h3>
               <p className="text-gray-600 mt-2">{product.description}</p>
-              <p className="text-xl font-bold text-green-600 mt-4">${product.price}</p>
+              <p className="text-xl font-bold text-green-600 mt-4">${product.price}</p> */}
             </div>
           </Link>
         ))}
