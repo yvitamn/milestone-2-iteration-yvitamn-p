@@ -99,7 +99,7 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
 };
 
 // Function to fetch a single product by ID
-export const fetchProductDetails = async (id: string): Promise<ProductsType | null> => {
+export const fetchProductDetails = async (id: string | any): Promise<ProductsType | null> => {
   try {
     const response = await fetch(`${BASE_URL}/products/${id}`);
 

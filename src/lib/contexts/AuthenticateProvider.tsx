@@ -18,7 +18,7 @@ export const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [errorUser, setErrorUser] = useState<string | null>(null);
   
   // Using useUserData hook to fetch user data based on token
-const { userFetched, errorUserData } = useUserData();
+const { userFetched, errorUserData } = useUserData(isAuthenticated);
 
 
     useEffect(() => {
@@ -115,8 +115,7 @@ const handleLogin = async ({ email, password }: LoginCredentials) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+   
     setIsAuthenticated(false);
     setUserLogin(null);
     setToken(null);

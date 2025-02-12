@@ -12,7 +12,7 @@ interface ProductDetailProps {
     onAddToCart: () => void;
     product: ProductsType; 
   }
-
+ 
 // This will fetch all product IDs during build time
 export const getStaticPaths: GetStaticPaths = async () => {
     try {
@@ -23,10 +23,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
         throw new Error('Products data is not an array');
       }
       
-      const paths = products.map((product) => ({
-        params: { id: product.id.toString() },
-      }));
-      console.log('Generated paths:', paths); 
+      const paths = products.map((product) => {
+        if (typeof product.id !== 'string') {
+            throw new Error(`Product ID is not a string: ${product.id}`);
+          }
+          return {
+            params: { id: product.id }, // No need for toString()
+          };
+        });
   
       return {
         paths,
@@ -38,47 +42,54 @@ export const getStaticPaths: GetStaticPaths = async () => {
     }
   };
   
-  // Fetch the product details at build time
   export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const { id } = params || {};  // Get the ID parameter
-    console.log('Params in getStaticProps:', params);
+    const { id } = params || {}; // Destructure `id` from `params`
+  
     if (!id || typeof id !== 'string') {
-        console.error('Invalid or missing ID:', id);
+      console.error('Invalid or missing ID:', id);
+      return { notFound: true };
+    }
+  
+    const productId = Number(id); // Convert `id` to a number
+  if (isNaN(productId)) {
+    console.error('Invalid ID (not a number):', id);
+    return { notFound: true };
+  }
+  console.log('ID in getStaticProps (as number):', productId); 
+    try {
+      const product = await fetchProductDetails(productId); // Fetch product details by ID
+      console.log('Product fetched in getStaticProps:', product); // Debugging
+  
+      if (!product) {
+        console.error('Product not found for ID:', id);
         return { notFound: true };
       }
-      console.log('ID in getStaticProps:', id);
-       
-      try {
-        const product = await fetchProductDetails(id.toString()); // Fetch product details by ID
-        //console.log('Product fetched in getStaticProps:', product);
-        if (!product) {
-            console.error('Product not found for ID:', id); 
-          return {
-            notFound: true, // Return 404 if product is not found
-          };
-        }
   
-    return {
-      props: {
-        product,
-      },
-      revalidate: 60, // Enable Incremental Static Regeneration (ISR) every 60 seconds
+      return {
+        props: {
+          product,
+        },
+        revalidate: 60, // Enable ISR
+      };
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        return {
+          redirect: {
+            destination: '/500', // Redirect to an error page
+            permanent: false,
+          },
+        };
+      }
     };
-  } catch (error) {
-    console.error('Error fetching product details:', error);
-    return {
-      notFound: true, // Return 404 if there's an error
-    };
-  }
-};
-
 
 
 const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
+    
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const { addProductToCart } = useCart();
     const [error, setError] = useState<string | null>(null);
    const router = useRouter();
+   //const { id } = router.query;
 
    if (router.isFallback) {
     return <div>Loading...</div>;
@@ -90,15 +101,23 @@ const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
     }
   }, [product]);
 
-  // Handler to add product to cart and open the modal
- // Function to handle "Add to Cart" action
-  const handleAddToCart = () => {
-    setIsAdding(true); // Set loading state
-    // Simulate an async operation (e.g., API call)
-    setTimeout(() => {
-      setIsAdding(false); // Reset loading state
-      onAddToCart();
-    }, 1000);
+  const handleAddToCart = async () => {
+    if (product) {
+      setIsAdding(true); // Set loading state to true before adding
+      try {
+        await addProductToCart(product);  // Assuming `addProductToCart` might be an async function
+        setIsAdding(false);  // Set loading state to false once product is added
+  
+        // Use setTimeout to delay the execution of onAddToCart
+        setTimeout(() => {
+          onAddToCart();  // Trigger the modal to show after a delay
+        }, 2000); // Delay of 2000 milliseconds (2 seconds)
+  
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+        setIsAdding(false); // Set loading state to false even if there's an error
+      }
+    }
   };
   
 
@@ -107,9 +126,9 @@ const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
       return <div>Product not found</div>;
     }
 
-    if (error) {
-        return <div>{error}</div>;
-      }
+  if (error) {
+    return <div>{error}</div>;
+  }
 
     return (
         <div className="container mx-auto p-6">

@@ -1,17 +1,18 @@
-//'use client';
+'use client';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
-
+import { useState } from 'react';
 
 const Navbar: React.FC = () => {
   const { userLogin, logout } = useAuth(); // Access user and authentication state
   const pathname = usePathname(); // To track the current route
-
+  const [isLoggedOut, setIsLoggedOut] = useState(false); 
   const handleLogout = () => {
     logout(); // Call the logout function from context
+    setIsLoggedOut(true);
     // You can also clear local storage or token if you're saving it
-  //  localStorage.removeItem('token');
+    localStorage.removeItem('token');
   };
   
 
@@ -46,15 +47,21 @@ const Navbar: React.FC = () => {
               >
                 Checkout
               </Link>
+              {!isLoggedOut ? (
+                <div>
               <span className="text-gray-300">{userLogin?.name}!</span> 
-              <button
+              <span
                 onClick={handleLogout}
                 className="hover:text-gray-300"
               >
                 Logout
-              </button>
-            </>
-          {/* ) : ( */}
+            </span>
+            </div>
+            ) : (
+              <span className="text-green-500">Logout Successful</span>
+            )}
+              </>
+            
             <>
               <Link
                 href="/login"
@@ -69,6 +76,7 @@ const Navbar: React.FC = () => {
                 Sign Up
               </Link>
             </>
+
           {/* )} */}
         </div>
       </div>
