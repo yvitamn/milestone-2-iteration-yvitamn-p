@@ -1,5 +1,5 @@
 'use client';
-
+import Image from 'next/image'
 import { fetchProducts} from '@/lib/api'; // Fetch products from the API
 import { ProductsType } from '@/lib/types';
 import Link from 'next/link';
@@ -65,7 +65,7 @@ const ProductsPage = ({ product }: ProductsPageProps) => {
           >
             <Link href={`/products/${product.id}`} passHref>
               <div className="cursor-pointer">
-                <img
+                <Image
                   src={product.imageUrl}
                   alt={product.title}
                   width={500}

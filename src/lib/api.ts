@@ -119,11 +119,11 @@ export const fetchProductDetails = async (id: string): Promise<ProductsType | nu
       console.log("data", data)
       throw new Error('Invalid product data format');
     }
-
+    console.log('API Response:', data);
     return {
       id: data.id,
       title: data.title,
-      description: data.description,
+      description: data.description || '',
       price: data.price,
       quantity: 1, // Set default quantity to 1
       imageUrl: data.images[0], // Use imageUrl as per your interface
