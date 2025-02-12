@@ -1,3 +1,4 @@
+'use client';
 import { ReactNode, useState } from 'react';
 import { ProductsType } from '@/lib/types';
 import { CartContext } from '@/lib/contexts/CartContext';

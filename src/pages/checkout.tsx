@@ -1,19 +1,21 @@
-
+'use client';
 import React, { useState, useEffect } from 'react';
-import { useCart } from '@/hooks/useCart'; // Custom hook to manage cart
+import { useCart } from '@/hooks/useCart'; 
 import { useAuth } from '@/hooks/useAuth';
 import { ThankYouModal } from '@/components/ThankYouModal';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { User } from '@/lib/types';
 import { fetchUserData } from '@/lib/apiUser';
+import { useUserData } from '@/hooks/useUserData';
+
+
 
 interface CheckoutPageProps {
-    userCheckout: User;  
-    error?: string;
+    userCheckout: User;  //This comes from server-side props
+    
   }
     
-
 //Server-side authentication check using `getServerSideProps`
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const token = context.req.cookies['auth-token'];
@@ -40,14 +42,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
  }
  return {
       props: {
-        userCheckout: userDataResponse.user, // Pass the user data to the page
+        userCheckout: userDataResponse, // Pass the user data to the page
       }, //can pass additional props
     };
 };
 
 
 const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth(); //add userData here?
+    const { userFetched, errorUserData } = useUserData(isAuthenticated);
     const { addedProducts, clearCart } = useCart(); // Get the cart items
     const [paymentMethod, setPaymentMethod] = useState<string>(''); // State for selected payment method
     const [error, setError] = useState<string | null>(null);
@@ -55,6 +58,7 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
     const [checkoutError, setCheckoutError] = useState<string | null>(null); 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();// To navigate after checkout
+    const user = userFetched;  
 
   // Calculate total price
   const calculateTotalPrice = () => {
@@ -76,7 +80,6 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
  
 
   const handleCheckout = async () => {
-    
       if (!paymentMethod) {
         setCheckoutError('Please select a payment method.');
         return;
@@ -99,22 +102,29 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
     };
 
 
-
   const handleContinueShopping = () => {
     router.push('/products'); // Navigate to the products page (or any other page you want)
   };
 
-//   const handleCloseModal = () => {
-//     setOrderSuccess(false); // Hide modal after closing
-//     router.push('/products'); // Redirect to home or any other page
+// // Check if user is of type `AuthResponseWithPurchase` and has `lastPurchase`
+// const isAuthResponseWithPurchase = (user: any): user is AuthResponseWithPurchase => {
+//     return user?.lastPurchase !== undefined;
 //   };
+
+
 
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-4xl font-bold mb-6 text-center">Checkout</h2>
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {errorUserData && <p className="text-red-500 text-center">{errorUserData}</p>}
       {userCheckout && (
-        <p className="text-lg text-center">Hello, {userCheckout.name}!</p>
+        <p className="text-lg text-center">Hello, {userFetched?.name}!</p>
+      )}
+      {/* Check if lastPurchase exists */}
+      {user?.lastPurchase && user.lastPurchase.length > 0 ? (
+        <p>Last Purchase: {user.lastPurchase[0].name} for ${user.lastPurchase[0].price}</p>
+      ) : (
+        <p>You haven't made a purchase yet.</p>
       )}
 
       {orderSuccess ? (

@@ -1,4 +1,4 @@
-
+'use client';
 // Frontend representation of a product
 export interface ProductsType {
     id: string | number ;
@@ -44,7 +44,7 @@ export interface ProductsType {
   }
   
    
- // User type for registration and login
+ // User type after registration and login
   export interface User {
     id: number;
     email: string;
@@ -52,10 +52,22 @@ export interface ProductsType {
     name: string; 
 } 
  
+// Include user info in authres
 export interface AuthResponse {
-  access_token: string;
+    access_token: string;
+    id: number;
+    email: string;
+    name: string; 
   // token_type: string;
   // expires_in: number;
+  }
+
+  export interface AuthResponseWithPurchase extends AuthResponse {
+    lastPurchase?: { 
+      productId: number;
+      name: string;
+      price: number;
+    }[]; 
   }
   
   // export interface CheckoutFormData {

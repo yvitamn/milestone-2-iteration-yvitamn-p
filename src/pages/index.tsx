@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link'; 
 import { fetchProducts } from '@/lib/api';
@@ -5,10 +6,10 @@ import { ProductsType } from '@/lib/types';
 import { GetStaticProps } from 'next';
 
 
-
 interface HomePageProps {
   productsHomePage: ProductsType[];
 }
+
 export const getStaticProps: GetStaticProps = async () => {
   let products: ProductsType[] = [];
   try {
@@ -72,7 +73,7 @@ const HomePage: React.FC<HomePageProps> = ({ productsHomePage }) => {
     {/* Scrollable Product Grid */}
     <div id="product-grid" className="overflow-x-auto whitespace-nowrap scroll-smooth max-w-screen-lg mx-auto">
       <div className="inline-flex gap-6 p-4">
-        {(productsHomePage || []).slice(0, 15).map((product) => (
+        {products.slice(0, 15).map((product) => (
           <div
             key={product.id}
             className="w-96 

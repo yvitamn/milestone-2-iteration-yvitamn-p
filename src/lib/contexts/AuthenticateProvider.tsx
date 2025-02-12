@@ -1,135 +1,143 @@
-import { apiLogin, apiRegister, ApiError} from '@/lib/api';
+'use client';
+
+import { apiLogin, apiRegister } from '@/lib/api';
 import { useState, useEffect, ReactNode } from 'react';
 import { AuthContext, AuthContextType } from '@/lib/contexts/AuthContext';  // Import the context
 import { User, AuthResponse, LoginCredentials, RegisterData } from '@/lib/types';
-import useUserData from '@/hooks/useUserData'; 
+import { useUserData } from '@/hooks/useUserData'; 
+//import { useAuth } from '@/hooks/useAuth';
+
 
 // Provider component that wraps the app and provides authentication state
 export const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null); 
-  const [user, setUser] = useState<User | null>(null);
-  //setUser(response.user);
+  const [userLogin, setUserLogin] = useState<User | null>(null); // For login state
+  //const [loadingUser, setLoadingUser] = useState<boolean>(true);
+  const [errorUser, setErrorUser] = useState<string | null>(null);
+  
+  // Using useUserData hook to fetch user data based on token
+const { userFetched, errorUserData } = useUserData();
 
-// Using useUserData hook to fetch user data based on token
-const { user: fetchedUser, loading, error } = useUserData(isAuthenticated);
 
-useEffect(() => {
-  // If useUserData hook successfully fetched the user, update the state
-  if (fetchedUser) {
-    setUser(fetchedUser);
-    setIsAuthenticated(true);
-  }
-}, [fetchedUser]);
-
-// Check if the user is authenticated (on page load)
-useEffect(() => {
-  const storedUser = localStorage.getItem('user');
-  const storedToken = localStorage.getItem('token'); // Fetch the token
-
-  if (storedUser && storedToken) {
-    try {
-      const parsedUser: User = JSON.parse(storedUser);
-      setUser(parsedUser);
+    useEffect(() => {
+    if (userFetched) {
+      // If userFetched is available, you can set it as authenticated user data
+      setUserLogin({
+        id: userFetched.id,
+        email: userFetched.email,
+        name: userFetched.name,
+      });
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      setUser(null);
-      setToken(null);
-      setIsAuthenticated(false);
     }
-  }
-}, []);
+  }, [userFetched]);
+
+
+// Effect to check localStorage for existing token and user on initial load
+useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true); // User is authenticated if token exists
+    }
+  }, []);
+// // Check if the user is authenticated (on page load)
+// useEffect(() => {
+//   const storedUser = localStorage.getItem('user');
+//   const storedToken = localStorage.getItem('token'); // Fetch the token
+
+//   if (storedUser && storedToken) {
+//     try {
+//       const parsedUser: User = JSON.parse(storedUser);
+//       setUser(parsedUser);
+//       setIsAuthenticated(true);
+//     } catch (error) {
+//       console.error('Error parsing user data:', error);
+//       localStorage.removeItem('user');
+//       localStorage.removeItem('token');
+//       setUser(null);
+//       setToken(null);
+//       setIsAuthenticated(false);
+//     }
+//   }
+// }, []);
 
 
 const handleLogin = async ({ email, password }: LoginCredentials) => {
     try {
       const authResponse: AuthResponse = await apiLogin({ email, password });
 
-      // Check for required fields in the response
       if (!authResponse.access_token) {
-        throw new Error('Access token is missing in the response');
+        throw new Error('Access token is missing');
       }
 
       const user: User = {
-        id: authResponse.id || 0, // Default value if id is missing
+        id: authResponse.id,
         name: authResponse.name,
-        email: authResponse.email || '',
+        email: authResponse.email,
       };
 
       localStorage.setItem('token', authResponse.access_token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      setUser(user);
+      setUserLogin(user); // Set the user login state
       setToken(authResponse.access_token);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Login failed:', error);
-      // Handle API-specific error responses
-      if (error instanceof ApiError) {
-        console.error(`API Error: ${error.message} (Code: ${error.code})`);
-      }
-      throw new Error('Login failed');
+      setErrorUser(error instanceof Error ? error.message : 'Login failed');
     }
   };
 
-  // Handle signup function
   const handleSignup = async (data: RegisterData) => {
     try {
       const authResponse: AuthResponse = await apiRegister(data);
 
-      // Check for required fields in the response
       if (!authResponse.access_token) {
-        throw new Error('Access token is missing in the response');
+        throw new Error('Access token is missing');
       }
 
       const user: User = {
-        id: authResponse.id || 0,
+        id: authResponse.id,
         name: authResponse.name,
-        email: authResponse.email || '',
+        email: authResponse.email,
       };
 
       localStorage.setItem('token', authResponse.access_token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      setUser(user);
+      setUserLogin(user); // Set the user login state
       setToken(authResponse.access_token);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Signup failed:', error);
-      // Handle API-specific error responses
-      if (error instanceof ApiError) {
-        console.error(`API Error: ${error.message} (Code: ${error.code})`);
-      }
-      throw error;
+      setErrorUser(error instanceof Error ? error.message : 'Signup failed');
     }
   };
-
 
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setIsAuthenticated(false);
-    setUser(null);
+    setUserLogin(null);
     setToken(null);
   };
 
   // Define the authContextValue using AuthContextType
   const authContextValue: AuthContextType = {
+    userData: userFetched, // the fetched user data from the custom hook
     isAuthenticated, 
-    user, 
+    userLogin, 
     token,
     login:handleLogin, 
     signup:handleSignup, 
     logout,
-    //error
+    errorUserData,
     
   };
 
   return (
     <AuthContext.Provider value={authContextValue}>
+       {errorUser && <div className="error-message">{errorUser}</div>}
       {children}
     </AuthContext.Provider>
   );

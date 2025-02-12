@@ -1,5 +1,7 @@
-//import { GetServerSideProps } from 'next';
-import { fetchProductDetails } from '@/lib/api'; // Fetch single product by ID
+'use client';
+
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { fetchProductDetails, fetchProducts } from '@/lib/api'; // Fetch single product by ID
 import { ProductsType } from '@/lib/types';
 //import { ProductDetail } from '@/components/ProductDetail';
 import { useState, useEffect } from 'react';
@@ -7,27 +9,46 @@ import { useRouter } from 'next/router';
 import { useCart } from '@/hooks/useCart';
 
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const { id } = context.params as { id: any };
-
-//   let product: ProductsType | null = null;
-//   try {
-//     product = await fetchProductDetails(id); // Fetch product by ID
-//   } catch (error) {
-//     console.error('Error fetching product details:', error);
-//   }
-//   if (!product) {
-//     return {
-//       notFound: true, // Show 404 if the product is not found
-//     };
-//   }
-
-//   return {
-//     props: {
-//       product: id,
-//     },
-//   };
-// };
+// This will fetch all product IDs during build time
+export const getStaticPaths: GetStaticPaths = async () => {
+    try {
+      const products = await fetchProducts();
+      const paths = products.map((product) => ({
+        params: { id: product.id.toString() },
+      }));
+  
+      return {
+        paths,
+        fallback: 'blocking', // Can be 'true', 'false', or 'blocking'
+      };
+    } catch (error) {
+      console.error('Error fetching product paths:', error);
+      return { paths: [], fallback: 'blocking' };
+    }
+  };
+  
+  // Fetch the product details at build time
+  export const getStaticProps: GetStaticProps = async (context) => {
+    const { id } = context.params as { id: string };
+  
+    let product = null;
+    try {
+      product = await fetchProductDetails(id); // Fetch product by ID
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+    }
+  
+    if (!product) {
+      return { notFound: true }; // Return a 404 page if the product doesn't exist
+    }
+  
+    return {
+      props: {
+        product,
+      },
+      revalidate: 60, // Optional: Incremental Static Regeneration every 60 seconds
+    };
+  };
 
 interface ProductDetailProps {
   onAddToCart: () => void;
@@ -40,20 +61,23 @@ const ProductDetailPage = ({ onAddToCart }: ProductDetailProps) => {
     const { addProductToCart } = useCart();
     const [product, setProduct] = useState<ProductsType | null>(null);  // Using any or Product if the type is defined
     const [error, setError] = useState<string | null>(null);
-  
+    const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch product details from API
   useEffect(() => {
     if (id) {
-      const fetchDetails = async () => {
-        try {
-          const data = await fetchProductDetails(id);
-          setProduct(data); // Assuming `fetchProductDetails` returns the full product data
-          setError(null); 
-        } catch (error) {
-          console.error('Error fetching product details:', error);
-          setError('Failed to load product details. Please try again later.');
-          setProduct(null);
+        const fetchDetails = async () => {
+            setLoading(true); // Start loading
+            try {
+              const data = await fetchProductDetails(id as string);
+              setProduct(data); // Assuming `fetchProductDetails` returns the full product data
+              setError(null); // Reset error if data is fetched successfully
+            } catch (error) {
+              console.error('Error fetching product details:', error);
+              setError('Failed to load product details. Please try again later.');
+              setProduct(null); // No product if there's an error
+            } finally {
+              setLoading(false); // End loading
         }
       };
       fetchDetails();
@@ -70,7 +94,7 @@ const ProductDetailPage = ({ onAddToCart }: ProductDetailProps) => {
   };
   
   // Loading and error states
-if (!product && !error) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -92,11 +116,16 @@ if (!product && !error) {
     );
   }
   
-  if (!product) return <div>Product not found</div>;
-
+  if (!product){
   return (
-    //<div className="flex justify-center items-center h-64">
-   
+    <div className="text-center p-6">
+        <h1 className="text-xl font-semibold">Product Not Found</h1>
+        <p>The product you are looking for could not be found.</p>
+      </div>
+    );
+  }
+
+  return(
   <div className="container mx-auto p-6">
     
     {/* <button

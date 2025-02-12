@@ -1,3 +1,5 @@
+'use client';
+
 import {  
       ProductsType,   
       //Category,
@@ -54,18 +56,7 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data: {
-      id: string | number;
-      title: string;
-      description: string;
-      price: number;
-      images: string[]; 
-      category: { 
-        id: string | number; 
-        name: string; 
-        image: string };
-      
-    }[] = await response.json(); // Inline the type
+    const data  = await response.json(); // Inline the type
 
 
    // Ensure that the response is an array and has the necessary properties
@@ -98,7 +89,7 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
 };
 
 // Function to fetch a single product by ID
-export const fetchProductDetails = async (id: string): Promise<Product> => {
+export const fetchProductDetails = async (id: string): Promise<ProductsType> => {
   try {
     const response = await fetch(`${BASE_URL}/products/${id}`);
 

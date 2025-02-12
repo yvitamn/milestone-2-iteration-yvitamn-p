@@ -1,10 +1,11 @@
+//'use client';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
 
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth(); // Access user and authentication state
+  const { isAuthenticated, userLogin, logout } = useAuth(); // Access user and authentication state
   const pathname = usePathname(); // To track the current route
 
   const handleLogout = () => {
@@ -29,21 +30,23 @@ const Navbar: React.FC = () => {
           >
             Home
           </Link>
-          {isAuthenticated ? (
-            <>
-              <Link
+
+            <Link
                 href="/products"
                 className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
               >
                 Products
               </Link>
+          {isAuthenticated ? (
+            <>
+             
               <Link
                 href="/checkout"
                 className={`${isActive("/checkout") ? "text-gray-300" : "hover:text-gray-300"}`}
               >
                 Checkout
               </Link>
-              <span className="text-gray-300">Welcome, {user?.name}!</span> {/* Display user name */}
+              <span className="text-gray-300">{userLogin?.name}!</span> 
               <button
                 onClick={handleLogout}
                 className="hover:text-gray-300"

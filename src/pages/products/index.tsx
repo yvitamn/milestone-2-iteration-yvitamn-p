@@ -1,3 +1,4 @@
+'use client';
 //import { GetStaticProps } from 'next';
 import { fetchProducts } from '@/lib/api'; // Fetch products from the API
 import { ProductsType } from '@/lib/types';
@@ -31,6 +32,8 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ productsListPage }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
 
+  const products = productsListPage || [];
+
   if (!productsListPage || productsListPage.length === 0) {
     return <div>No products available.</div>; // Show a fallback message if no products
   }
@@ -52,7 +55,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ productsListPage }) => {
         <div className="text-center text-red-600">{error}</div>
       ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {(productsListPage || []).map((product) => (
+        {products.map((product) => (
           <div
             key={product.id}
             className="col-span-1 p-4 border rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out"

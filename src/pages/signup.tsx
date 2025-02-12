@@ -1,3 +1,4 @@
+'use client';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -17,13 +18,13 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
+    // if (!name || !email || !password) {
+    //   setError('Please fill in all fields');
+    //   return;
+    // }
 
-    setIsLoading(true);
-    setError('');
+    // setIsLoading(true);
+    // setError('');
     try {
       await signup({ name, email, password });
       router.push('/login'); // Redirect to login page after successful signup

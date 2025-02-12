@@ -1,7 +1,8 @@
+'use client';
 import React from 'react';
 import Header from '@/layout/Header';
 import Footer from '@/layout/Footer';
-import WelcomeModal from '@/pages/index';
+//import WelcomeModal from '@/pages/index';
 import Navbar from '@/layout/Navbar';
 
 
@@ -65,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {children}
 
       {/* Welcome Modal */}
-    <WelcomeModal  />
+    {/* <WelcomeModal  /> */}
 
            
       

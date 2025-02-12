@@ -1,32 +1,38 @@
+'use client';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
 
 
 const Login: React.FC = () => {
-  const { login } = useAuth(); // Access auth functions
+  const { isAuthenticated, login } = useAuth(); // Access auth functions
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
+
+  if (isAuthenticated) {
+    router.push('/products'); // Example redirect
+    
+    return null; // Prevent rendering the login form
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please enter both email and password');
-      return;
-    }
-   setIsLoading(true);
-   setError('');
+  //   if (!email || !password) {
+  //     setError('Please enter both email and password');
+  //     return;
+  //   }
+  // setIsLoading(true);
+  // setError('');
 
     try {
       await login({ email, password }); // Use login function from context
       router.push('/products'); // Redirect to products page after successful login
-    } catch (err) {
-      setError('Invalid email or password');
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   };
 

@@ -1,4 +1,4 @@
-
+'use client';
 
 import { createContext } from 'react';
 import { ProductsType } from '@/lib/types'; 

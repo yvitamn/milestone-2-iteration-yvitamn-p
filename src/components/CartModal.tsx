@@ -1,3 +1,4 @@
+'use client';
 import React, { useRef, useEffect } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { CartSummary } from '@/components/CartSummary';

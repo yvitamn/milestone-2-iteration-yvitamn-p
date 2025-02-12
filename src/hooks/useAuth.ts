@@ -1,4 +1,4 @@
-
+'use client';
 import { useContext } from 'react';
 import { AuthContext } from '@/lib/contexts/AuthContext';
 //import { LoginCredentials, RegisterData } from '@/lib/types';
@@ -13,7 +13,7 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthenticateProvider');
   }
 
-  const { isAuthenticated, user, login, logout, signup } = authContext;
+  const { isAuthenticated, userLogin, userData, errorUserData, token, login, logout, signup } = authContext;
 
   // const handleLogin = (credentials: LoginCredentials) => {
   //   return login(credentials);
@@ -23,5 +23,5 @@ export const useAuth = () => {
   //   return logout();
   // };
 
-  return { isAuthenticated, user, login, logout,signup };
+  return { isAuthenticated, userLogin, userData, errorUserData, token, login, logout,signup };
 };
