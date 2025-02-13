@@ -48,7 +48,7 @@ useEffect(() => {
           <li key={item.id} className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <img
-                src={item.images[0]}
+                src={item.imageUrl[0]}
                 alt={item.title}
                 className="w-16 h-16 object-cover"
               />

@@ -119,7 +119,7 @@ const HomePage = ({ product }: HomePageProps) => {
             >
               <div className="relative w-full h-64 mb-4">
               <Image
-                src={product.imageUrl[0]}
+                src={product.imageUrl}
                 alt={product.title}
                 width={500}
                 height={400}

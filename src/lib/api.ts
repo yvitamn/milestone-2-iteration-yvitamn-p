@@ -72,9 +72,12 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
     !Array.isArray(data) ||
     !data.every(
       (product) =>
-        product.id &&
+        product.id !== undefined && // Ensure id is defined
+        product.id !== null &&      // Ensure id is not null
+        product.id !== '' && 
         product.title &&
         product.price &&
+        Array.isArray(product.images) &&
         product.images.length > 0
     )
   ) {
@@ -82,8 +85,8 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
   }
 
      // Adding a default quantity to each product
-    return data.map((product) => ({
-      id: product.id,
+    const mappedProducts = data.map((product) => ({
+      id: product.id.toString(),
       title: product.title,
       description: product.description,
       price: product.price,
@@ -92,6 +95,9 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
       // : JSON.parse(product.images)[0],
       quantity: 1, // Set default quantity to 1
     }));
+  
+    console.log('Mapped products:', mappedProducts);
+    return mappedProducts;
   } catch (error) {
     console.error("Error fetching products:", error);
     throw error;
@@ -99,11 +105,16 @@ export const fetchProducts = async (): Promise<ProductsType[]> => {
 };
 
 // Function to fetch a single product by ID
-export const fetchProductDetails = async (id: string | any): Promise<ProductsType | null> => {
+export const fetchProductDetails = async (id: string): Promise<ProductsType | null> => {
   try {
     const response = await fetch(`${BASE_URL}/products/${id}`);
 
     if (!response.ok) {
+      // Handle HTTP errors (e.g., 404 Not Found)
+      if (response.status === 404) {
+        console.error(`Product with ID ${id} not found.`);
+        return null; // Return null if the product is not found
+      }
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
@@ -115,12 +126,16 @@ export const fetchProductDetails = async (id: string | any): Promise<ProductsTyp
       !data.id ||
        !data.title ||
         !data.price ||
-         !data.images) {
+        !data.description ||
+        !Array.isArray(data.images) ||
+        data.images.length === 0
+        ) {
       console.log("data", data)
+      console.error('Invalid product data format:', data);
       throw new Error('Invalid product data format');
     }
-    console.log('API Response:', data);
-    return {
+    // Map the API response to the ProductsType interface
+    const product: ProductsType = {
       id: data.id,
       title: data.title,
       description: data.description || '',
@@ -128,6 +143,8 @@ export const fetchProductDetails = async (id: string | any): Promise<ProductsTyp
       quantity: 1, // Set default quantity to 1
       imageUrl: data.images[0], // Use imageUrl as per your interface
     };
+    console.log('Mapped product:', product);
+    return product;
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw error;

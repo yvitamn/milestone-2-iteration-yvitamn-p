@@ -1,4 +1,7 @@
 'use client';
+
+import { ParsedUrlQuery } from 'querystring';
+
 // Frontend representation of a product
 export interface ProductsType {
     id: string | number ;
@@ -6,11 +9,16 @@ export interface ProductsType {
     description: string;
     price: number;
     imageUrl: string; 
-    //category: Category;
     quantity: number;
+    //categoryName: string; 
   }
- 
 
+
+
+// Define Params to be compatible with ParsedUrlQuery
+export interface Params extends ParsedUrlQuery {
+  id: string | string[] | undefined;  // Allow string or array of strings or undefined
+}
 // // Category information
 // export interface Category {
 //     id: number | string ;

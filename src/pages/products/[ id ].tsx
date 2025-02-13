@@ -1,20 +1,21 @@
 'use client';
 import Image from 'next/image'
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { fetchProductDetails, fetchProducts } from '@/lib/api'; // Fetch single product by ID
-import { ProductsType } from '@/lib/types';
+import { fetchProductDetails, fetchProducts } from '@/lib/api';
+import { ProductsType, Params } from '@/lib/types';
 import { useCart } from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 
 interface ProductDetailProps {
-    onAddToCart: () => void;
-    product: ProductsType; 
+  onAddToCart?: () => void;
+    product: ProductsType;
   }
- 
-// This will fetch all product IDs during build time
-export const getStaticPaths: GetStaticPaths = async () => {
+  
+   
+  // This will fetch all product IDs during build time
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
     try {
       const products = await fetchProducts();
       console.log('Products fetched in getStaticPaths:', products); // Debugging
@@ -23,18 +24,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
         throw new Error('Products data is not an array');
       }
       
-      const paths = products.map((product) => {
-        if (typeof product.id !== 'string') {
-            throw new Error(`Product ID is not a string: ${product.id}`);
-          }
-          return {
-            params: { id: product.id }, // No need for toString()
-          };
-        });
+      // Generate paths for each product (ensure id is a string)
+      const paths = products.map((product) => ({
+        params: { id: product.id.toString() }, // Ensure id is a string
+      }));
+      console.log('Generated paths:', paths);
   
       return {
         paths,
-        fallback: 'blocking', // Can be 'true', 'false', or 'blocking'
+        fallback: 'blocking', 
       };
     } catch (error) {
       console.error('Error fetching product paths:', error);
@@ -42,48 +40,48 @@ export const getStaticPaths: GetStaticPaths = async () => {
     }
   };
   
-  export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const { id } = params || {}; // Destructure `id` from `params`
+  export const getStaticProps: GetStaticProps<ProductDetailProps, Params> = async ({params}) => {
+    const { id } = params as { id: string };
   
-    if (!id || typeof id !== 'string') {
-      console.error('Invalid or missing ID:', id);
-      return { notFound: true };
-    }
+    // Handle case where params is undefined
+//     if (!params?.id) {
+//       return {
+//         notFound: true, // Return 404 if id is missing
+//       };
+//     }
+//     // Ensure that id is a string (it could be string[] due to query params structure)
+//   const id = Array.isArray(params.id) ? params.id[0] : params.id; // Use the first value if it's an array
+
+    console.log('Fetching product for ID:', id);
   
-    const productId = Number(id); // Convert `id` to a number
-  if (isNaN(productId)) {
-    console.error('Invalid ID (not a number):', id);
-    return { notFound: true };
-  }
-  console.log('ID in getStaticProps (as number):', productId); 
     try {
-      const product = await fetchProductDetails(productId); // Fetch product details by ID
-      console.log('Product fetched in getStaticProps:', product); // Debugging
+      const product = await fetchProductDetails(id); // Fetch product by ID
+      
+      console.log('Product fetched in getStaticProps:', product);
   
       if (!product) {
-        console.error('Product not found for ID:', id);
-        return { notFound: true };
-      }
-  
+        return {
+          notFound: true, // Return 404 if product is not found
+        };
+      } 
       return {
         props: {
           product,
+          onAddToCart: () => {
+            console.log('Product added to cart!');
+          }, // Pass product data to the page
         },
-        revalidate: 60, // Enable ISR
       };
     } catch (error) {
-        console.error('Error fetching product details:', error);
-        return {
-          redirect: {
-            destination: '/500', // Redirect to an error page
-            permanent: false,
-          },
-        };
-      }
-    };
+      console.error('Error fetching product:', error);
+      return {
+        notFound: true, // Return 404 if there's an error
+      };
+        }
+  };
 
 
-const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
+const ProductDetailPage: React.FC<ProductDetailProps> = ({ onAddToCart, product }) => {
     
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const { addProductToCart } = useCart();
@@ -110,15 +108,17 @@ const ProductDetailPage = ({ product, onAddToCart }: ProductDetailProps) => {
   
         // Use setTimeout to delay the execution of onAddToCart
         setTimeout(() => {
-          onAddToCart();  // Trigger the modal to show after a delay
-        }, 2000); // Delay of 2000 milliseconds (2 seconds)
-  
-      } catch (error) {
-        console.error("Error adding product to cart:", error);
-        setIsAdding(false); // Set loading state to false even if there's an error
-      }
-    }
-  };
+            if (onAddToCart) { // Ensure onAddToCart is defined before calling it
+                onAddToCart();  // Trigger the modal to show after a delay
+              }
+            }, 2000); // Delay of 2000 milliseconds (2 seconds)
+      
+          } catch (error) {
+            console.error("Error adding product to cart:", error);
+            setIsAdding(false); // Set loading state to false even if there's an error
+          }
+        }
+      };
   
 
   
