@@ -74,8 +74,9 @@ const ProductsPage = ({ product }: ProductsPageProps) => {
                   // className="product-image h-64 object-cover rounded-lg mb-4 shadow-md"
                 />
                 <div className="p-4">
+
                   <h2 className="product-title text-2xl font-semibold text-gray-800 mb-2">{product.title}</h2>
-                  {/* <p className="product-description text-gray-600 text-sm line-clamp-3">{product.description}</p> */}
+                  <p className="product-description text-gray-600 text-sm line-clamp-3">Category product: {product.category.name}</p>
                   <p className="product-price mt-4 text-lg font-bold text-green-500">${product.price}</p>
                 </div>
               </div>

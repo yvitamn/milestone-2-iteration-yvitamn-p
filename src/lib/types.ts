@@ -1,6 +1,6 @@
 'use client';
 
-import { ParsedUrlQuery } from 'querystring';
+//import { ParsedUrlQuery } from 'querystring';
 
 // Frontend representation of a product
 export interface ProductsType {
@@ -10,32 +10,32 @@ export interface ProductsType {
     price: number;
     imageUrl: string; 
     quantity: number;
-    //categoryName: string; 
+    category: Category;
+  }
+
+
+  export interface Params {
+    //id: string; 
+    categoryId: string;
+  }
+
+ // Category information
+export interface Category {
+    id: number | string ;
+    name: string;
+    description?: string;
+    image?: string; // URL of the category image
   }
 
 
 
 // Define Params to be compatible with ParsedUrlQuery
-export interface Params extends ParsedUrlQuery {
-  id: string | string[] | undefined;  // Allow string or array of strings or undefined
-}
-// // Category information
-// export interface Category {
-//     id: number | string ;
-//     name: string;
-//     description?: string;
-//     image?: string; // URL of the category image
-
-//   }
-
-//   export interface categoryWithProducts{
-//   category: Category;
-//   products: ProductsType[];  // List of products for the category
+// export interface Params extends ParsedUrlQuery {
+//   id: string | string[] | undefined;  // Allow string or array of strings or undefined
 // }
 
 
-  
-    export interface ApiErrorData {
+      export interface ApiErrorData {
     message: string;
     statusCode?: number;
   }

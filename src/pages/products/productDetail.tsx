@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 interface ProductDetailProps {
   onAddToCart?: () => void;
     product: ProductsType;
+
   }
   
    
@@ -26,7 +27,7 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
       
       // Generate paths for each product (ensure id is a string)
       const paths = products.map((product) => ({
-        params: { id: product.id.toString() }, // Ensure id is a string
+        params: { id: product.id.toString(). categoryId: product.category.id.toString()  }, // Ensure id is a string
       }));
       console.log('Generated paths:', paths);
   
@@ -41,21 +42,14 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
   };
   
   export const getStaticProps: GetStaticProps<ProductDetailProps, Params> = async ({params}) => {
-    const { id } = params as { id: string };
+    const { id, categoryId } = params as { id: string; categoryId: string };
   
-    // Handle case where params is undefined
-//     if (!params?.id) {
-//       return {
-//         notFound: true, // Return 404 if id is missing
-//       };
-//     }
-//     // Ensure that id is a string (it could be string[] due to query params structure)
-//   const id = Array.isArray(params.id) ? params.id[0] : params.id; // Use the first value if it's an array
-
-    console.log('Fetching product for ID:', id);
+    console.log('Fetching product for ID:', id, 'and CategoryId', categoryId);
   
     try {
-      const product = await fetchProductDetails(id); // Fetch product by ID
+       // Fetch products by category if categoryId is available
+    const products = await fetchProducts(categoryId);  // Fetch products by category if categoryId exists
+    const product = products.find((p) => p.id.toString() === id);
       
       console.log('Product fetched in getStaticProps:', product);
   
@@ -87,11 +81,14 @@ const ProductDetailPage: React.FC<ProductDetailProps> = ({ onAddToCart, product 
     const { addProductToCart } = useCart();
     const [error, setError] = useState<string | null>(null);
    const router = useRouter();
-   //const { id } = router.query;
+   const { id, categoryId } = router.query;
 
    if (router.isFallback) {
     return <div>Loading...</div>;
 }
+if (!id || !categoryId) {
+    return <div>Product or Category not found</div>;
+  }
     // If product is not found, show error message
   useEffect(() => {
     if (!product) {
