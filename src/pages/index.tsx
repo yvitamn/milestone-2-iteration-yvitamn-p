@@ -6,9 +6,9 @@ import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 
-interface HomePageProps {
-  product: ProductsType[]; 
-}
+// interface HomePageProps {
+//   product: ProductsType[]; 
+// }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
  
@@ -29,28 +29,34 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 
-const HomePage = ({ product }: HomePageProps) => {
+const HomePage = () => {
   const [productsHome, setProductsHome] = useState<ProductsType[]>([]); // Products state
   const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [visibleProducts, setVisibleProducts] = useState<ProductsType[]>([]); //slice
   
-  const sliceProducts = (allProducts: ProductsType[], startIndex: number, endIndex: number) => {
-    return allProducts.slice(startIndex, endIndex);
-  }
-
-     // If product is not found, show error message
-     useEffect(() => {
-      console.log('Product in useEffect:', product); 
-      if (!product) {
-        setError('Product not found');
-        setIsLoading(false);  
-        return;     
-      }
+     // Fetch product data when component mounts (using getStaticProps data in the component directly)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const product = await fetchProducts();
       //add single product if needed
       setProductsHome(product);
       setIsLoading(false); 
-    }, [product]);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError('Error fetching products');  // Set error if fetching fails
+      setIsLoading(false);  // Stop loading even if there's an error
+    }
+  };
+
+  fetchData(); 
+}, []); 
+
+
+const sliceProducts = (allProducts: ProductsType[], startIndex: number, endIndex: number) => {
+  return allProducts.slice(startIndex, endIndex);
+}
 
   // Slice and paginate products for scrollable grid
   const handleScroll = (event: React.UIEvent) => {

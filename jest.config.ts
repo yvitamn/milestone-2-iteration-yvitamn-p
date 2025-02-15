@@ -12,7 +12,7 @@ const config: Config = {
   testEnvironment: 'jsdom',  // Set the environment to jsdom for DOM-based testing
   
   // Optional: If you need a setup file for global configuration
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['./jest.setup.ts'],
   
   // Add support for custom paths (like @components/*, @hooks/*) if needed
   moduleNameMapper: {
@@ -29,4 +29,3 @@ const config: Config = {
 
 export default createJestConfig(config);
 
-//butuh install jest setup ga?
