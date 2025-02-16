@@ -5,121 +5,50 @@ import Link from 'next/link';
 import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
+import { Search } from 'lucide-react';
 
 // interface HomePageProps {
 //   product: ProductsType[]; 
 // }
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async () => {
  
-  let product: ProductsType[] = [];
-  try {
-    // Fetch all products
-    product = await fetchProducts();  // This will return an array of all products
-  } catch (error) {
-    console.error('Error fetching products:', error);
-  }
+    const products = await fetchProducts();  // This will return an array of all products
+ 
 
   return {
     props: {
-      product,  // Pass the products array as props to the page
+      products,  // Pass the products array as props to the page
     },
     revalidate: 60,  // Optional: If you want Incremental Static Regeneration every 60 seconds
   };
 };
 
 
-const HomePage = () => {
-  const [productsHome, setProductsHome] = useState<ProductsType[]>([]); // Products state
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
-  const [visibleProducts, setVisibleProducts] = useState<ProductsType[]>([]); //slice
-  
-     // Fetch product data when component mounts (using getStaticProps data in the component directly)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const product = await fetchProducts();
-      //add single product if needed
-      setProductsHome(product);
-      setIsLoading(false); 
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setError('Error fetching products');  // Set error if fetching fails
-      setIsLoading(false);  // Stop loading even if there's an error
-    }
-  };
+const HomePage = ({ products }: { products: ProductsType[] }) => {
+  const [searchTerm, setSearchTerm] = useState('');
 
-  fetchData(); 
-}, []); 
-
-
-const sliceProducts = (allProducts: ProductsType[], startIndex: number, endIndex: number) => {
-  return allProducts.slice(startIndex, endIndex);
-}
-
-
-  // Slice and paginate products for scrollable grid
-  const handleScroll = (event: React.UIEvent) => {
-    const grid = event.target as HTMLElement;
-    const rightEnd = grid.scrollWidth === grid.scrollLeft + grid.clientWidth;
-
-    if (rightEnd && !isLoading && visibleProducts.length < productsHome.length) {
-      setIsLoading(true);
-
-
-      // For example, loading the next 10 products on scroll
-      const newProducts = sliceProducts(productsHome, visibleProducts.length, visibleProducts.length + 10);
-      setVisibleProducts((prev) => [...prev, ...newProducts]);
-
-      setIsLoading(false);
-    }
-  };
-
-  // Initialize the visible products with the first 15
-  useEffect(() => {
-    if (productsHome.length) {
-      setVisibleProducts(sliceProducts(productsHome, 0, 15));
-    }
-  }, [productsHome]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto px-4 py-10">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Product Page</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">All Products</h1>
 
-      {productsHome.length > 0 && (
-        
-        <div className="text-center mb-10">
-          <Image
-                src={productsHome[0].imageUrl}
-                alt={productsHome[0].title}
-                width={500}
-                height={400}
-               className="rounded-lg"
-                />
-          // <h2 className="text-2xl font-semibold text-gray-700">{productsHome[0].title}</h2>
-          {/* <p className="text-lg text-gray-600 mt-2">{productsHome[0].description}</p> */}
-          {/* <p className="text-xl font-bold text-green-600 mt-2">${productsHome[0].price}</p> */}
-        </div>
-      )}
-
-      {/* Scrollable grid for products */}
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-auto py-4"
-        onScroll={handleScroll}
-        style={{
-          maxHeight: '400px',
-        }}
-      >
-        {visibleProducts.map((product) => (
+       {/* Search input with search icon */}
+       <div className="mb-6 flex items-center justify-center space-x-2">
+        <Search className="text-gray-500" size={20} /> {/* Search icon */}
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 w-64 border border-gray-300 rounded-lg"
+        />
+      </div>
+      
+        {filteredProducts.map((product) => (
           <Link key={product.id} href={`/product/${product.id}`}>
             <div
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
@@ -141,7 +70,7 @@ const sliceProducts = (allProducts: ProductsType[], startIndex: number, endIndex
           </Link>
         ))}
       </div>
-    </div>
+
   );
 };
 

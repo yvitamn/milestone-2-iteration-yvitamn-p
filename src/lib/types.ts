@@ -10,7 +10,7 @@ export interface ProductsType {
     price: number;
     imageUrl: string; 
     quantity: number;
-    category: Category;
+    category: CategoryType;
   }
 
 
@@ -20,7 +20,7 @@ export interface ProductsType {
   }
 
  // Category information
-export interface Category {
+export interface CategoryType {
     id: number | string ;
     name: string;
     description?: string;
@@ -28,11 +28,6 @@ export interface Category {
   }
 
 
-
-// Define Params to be compatible with ParsedUrlQuery
-// export interface Params extends ParsedUrlQuery {
-//   id: string | string[] | undefined;  // Allow string or array of strings or undefined
-// }
 
 
       export interface ApiErrorData {

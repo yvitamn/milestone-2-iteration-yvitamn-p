@@ -12,7 +12,6 @@ import {
 const BASE_URL = "https://api.escuelajs.co/api/v1";
 
 
-
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -45,56 +44,53 @@ export async function handleApiError(error: unknown) {
   throw new Error("Unknown error occurred");
 }
 
-
+// Helper function to validate product data
+export const validateProductData = (product: any): boolean => {
+  return (
+    product.id !== undefined &&
+    product.id !== null &&
+    product.id !== "" &&
+    product.title &&
+    product.price &&
+    Array.isArray(product.images) &&
+    product.images.length > 0 &&
+    product.category
+  );
+};
 //--------------------------------------------------
-export const fetchProducts = async (categoryId?: string | number): Promise<ProductsType[]> => {
+// Function to fetch products
+export const fetchProducts = async (
+  categoryId?: string | number,
+  baseUrl: string = BASE_URL // Allow overriding the base URL
+): Promise<ProductsType[]> => {
   try {
-    // If categoryId is passed, include it in the API request
-    const url = categoryId 
-      ? `${BASE_URL}/products/?categoryId=${categoryId}`
-      : `${BASE_URL}/products`;
+    // Build the URL
+    const url = categoryId
+      ? `${baseUrl}/products/?categoryId=${categoryId}`
+      : `${baseUrl}/products`;
 
+    // Fetch data
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data: {
-      id: string | number;
-      title: string;
-      description: string;
-      price: number;
-      images: string[];
-      category: { id: number | string; name: string }; // Category info in response
-    }[] = await response.json(); 
+    const data = await response.json();
 
-    // Ensure that the response is an array and has the necessary properties
-    if (
-      !Array.isArray(data) ||
-      !data.every(
-        (product) =>
-          product.id !== undefined &&
-          product.id !== null &&
-          product.id !== '' &&
-          product.title &&
-          product.price &&
-          Array.isArray(product.images) &&
-          product.images.length > 0 &&
-          product.category
-      )
-    ) {
-      throw new Error('Invalid data format');
+    // Validate the response
+    if (!Array.isArray(data) || !data.every(validateProductData)) {
+      throw new Error("Invalid data format");
     }
 
-    // Adding a default quantity to each product and including category information
-    const mappedProducts = data.map((product) => ({
+    // Map the data to the ProductsType interface
+    const mappedProducts: ProductsType[] = data.map((product) => ({
       id: product.id.toString(),
       title: product.title,
       description: product.description,
       price: product.price,
-      imageUrl: product.images[0], // Use the first image in the images array
-      quantity: 1, // Set default quantity to 1
+      imageUrl: product.images[0], // Use the first image
+      quantity: 1, // Default quantity
       category: {
         id: product.category.id,
         name: product.category.name,
@@ -103,51 +99,50 @@ export const fetchProducts = async (categoryId?: string | number): Promise<Produ
 
     return mappedProducts;
   } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new Error("Failed to fetch products");
   }
 };
 
 
 
+
 //-------------------------------------------
 // Function to fetch a single product by ID
-export const fetchProductDetails = async (id: string): Promise<ProductsType | null> => {
+export const fetchProductDetails = async (
+  id: string,
+  baseUrl: string = BASE_URL // Allow overriding the base URL
+): Promise<ProductsType | null> => {
   try {
-    const response = await fetch(`${BASE_URL}/products/${id}`);
+    // Fetch data
+    const response = await fetch(`${baseUrl}/products/${id}`);
 
     if (!response.ok) {
       if (response.status === 404) {
         console.error(`Product with ID ${id} not found.`);
-        return null; 
+        return null;
       }
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const data = await response.json();
 
-    // Ensure that the response contains valid product data
-    if (
-      !data.id ||
-      !data.title ||
-      !data.price ||
-      !data.description ||
-      !Array.isArray(data.images) ||
-      data.images.length === 0 ||
-      !data.category
-    ) {
-      console.error('Invalid product data format:', data);
-      throw new Error('Invalid product data format');
+    // Validate the response
+    if (!validateProductData(data)) {
+      console.error("Invalid product data format:", data);
+      throw new Error("Invalid product data format");
     }
 
-    // Map the API response to the ProductsType interface
+    // Map the data to the ProductsType interface
     const product: ProductsType = {
       id: data.id,
       title: data.title,
-      description: data.description || '',
+      description: data.description || "",
       price: data.price,
-      quantity: 1, // Set default quantity to 1
-      imageUrl: data.images[0], // Use imageUrl as per your interface
+      quantity: 1, // Default quantity
+      imageUrl: data.images[0], // Use the first image
       category: {
         id: data.category.id,
         name: data.category.name,
@@ -156,11 +151,12 @@ export const fetchProductDetails = async (id: string): Promise<ProductsType | nu
 
     return product;
   } catch (error) {
-    console.error("Error fetching product details:", error);
-    throw error;
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new Error("Failed to fetch products");
   }
 };
-
 
 
   // Function to register a new user
