@@ -1,12 +1,10 @@
 'use client';
-import Image from 'next/image';
-import Link from "next/link";
-import { GetServerSideProps } from 'next';
-//import { fetchProductDetails, fetchProducts } from '@/lib/api';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { fetchProductDetails, fetchProducts } from '@/lib/api';
 import { CategoryType, ProductsType } from '@/lib/types';
-import { useCart } from '@/hooks/useCart';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { ProductDetail } from '@/components/ProductDetail';
+
 
 
 interface ProductDetailProps {
@@ -15,122 +13,85 @@ interface ProductDetailProps {
     category: CategoryType; 
   }
   
+  export const getStaticPaths: GetStaticPaths = async () => {
+    try {
+      // Fetch all product IDs (you can create a separate function for this)
+      const products: ProductsType[] = await fetchProducts(); //  fetches the list of all products
   
-  export const getServerSideProps: GetServerSideProps<ProductDetailProps> = async (context) => {
-    const { id } = context.params;
+      const paths = products.map((product) => ({
+        params: { id: product.id.toString() }, // Dynamic route for product ID
+      }));
   
-    // Fetch product details
-    const productRes = await fetch(`https://api.escuelajs.co/api/v1/products/${id}`);
-    const product = await productRes.json();
-  
-    // Fetch category details using the product's categoryId
-    const categoryRes = await fetch(`https://api.escuelajs.co/api/v1/categories/${product.category.id}`);
-    const category = await categoryRes.json();
-  
-    return {
-      props: {
-        product,
-        category,
-      },
-    };
+      return {
+        paths,
+        fallback: 'blocking', 
+      };
+    } catch (error) {
+      console.error('Error fetching product paths:', error);
+      return { paths: [], fallback: 'blocking' };
+    }
   };
 
+  export const getStaticProps: GetStaticProps<ProductDetailProps> = async ({ params }) => {
+    try {
+      const productId = params?.id as string;  // Capture the product ID as string
+  
+      // Convert productId to a number if necessary (because your API expects number)
+      const id = typeof productId === 'string' ? parseInt(productId, 10) : productId;
+  
+      // Fetch product details
+      const product = await fetchProductDetails(id);
+  
+      if (!product) {
+        return { notFound: true }; // Return 404 if the product is not found
+      }
+  
+      // Fetch the category details using the product's category ID
+      const categoryRes = await fetch(`https://api.escuelajs.co/api/v1/categories`);
+      const categories: CategoryType[] = await categoryRes.json();
+  
+        // Find the category that matches the product's category ID
+        const category = categories.find((cat: CategoryType) => cat.id === product.category.id);
+
+        if (!category) {           
+      return { notFound: true }; 
+      }
+      return {
+        props: {
+          product,
+          category,
+        },
+        revalidate: 60, // Optional: revalidate the page after 60 seconds (optional for ISR)
+      };
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+      return {
+        notFound: true,
+      };
+    }};
 
 const ProductDetailPage = ({ onAddToCart, product, category }: ProductDetailProps) => {   
-    const [isAdding, setIsAdding] = useState<boolean>(false);
-    const { addProductToCart } = useCart();
-    const [error, setError] = useState<string | null>(null);
-   const router = useRouter();
-   //const { id } = router.query;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const router = useRouter();
 
-   if (router.isFallback) {
-    return <div>Loading...</div>;
-}
-    // If product is not found, show error message
-  useEffect(() => {
-    if (!product) {
-      setError('Product not found');
+    if (router.isFallback) {
+        return <div>Loading...</div>;
     }
-  }, [product]);
 
-  const handleAddToCart = async () => {
-    if (product) {
-      setIsAdding(true); // Set loading state to true before adding
-      try {
-        await addProductToCart(product);  // Assuming `addProductToCart` might be an async function
-        setIsAdding(false);  // Set loading state to false once product is added
-  
-        // Use setTimeout to delay the execution of onAddToCart
-        setTimeout(() => {
-            if (onAddToCart) { // Ensure onAddToCart is defined before calling it
-                onAddToCart();  // Trigger the modal to show after a delay
-              }
-            }, 2000); // Delay of 2000 milliseconds (2 seconds)
-      
-          } catch (error) {
-            console.error("Error adding product to cart:", error);
-            setIsAdding(false); // Set loading state to false even if there's an error
-          }
-        }
+    const handleAddToCart = () => {
+        setIsModalOpen(true); // Open the modal in the parent component
       };
-  
 
-  
-    if (!product) {
-      return <div>Product not found</div>;
-    }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+    if (!product) return <div>Product not found</div>;
 
     return (
-        <div className="container mx-auto p-6">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()} // Navigate to the previous page
-          className="mb-6 bg-gray-500 text-white py-2 px-6 rounded-md hover:bg-gray-600"
-        >
-          Back
-        </button>
-  
-        {/* Product Title */}
-        <h2 className="text-4xl font-bold mb-6">{product.title}</h2>
-  
-        {/* Product Image */}
-        <Image
-          src={product.imageUrl}
-          alt={product.title}
-          width={500}
-          height={400}
-          className="rounded-lg mb-4"
-        />
-        {/* Product Price */}
-        <p>
-          <strong>Category</strong> {category.name}
-        </p>
-        <p className="text-xl font-semibold mb-4">${product.price}</p>
-        {/* Product Description */}
-        <p className="text-lg mb-4">{product.description}</p>
-        <Link href={`/categories/${category.id}`}>
-          <a>View more products in this category</a>
-        </Link>
-        
-  
-
-        {/* Add to Cart Button */}
-        <button
-          onClick={handleAddToCart}
-          disabled={isAdding} // Disable if product is not loaded
-          className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          aria-label="Add to Cart"
-          role="button"
-          tabIndex={0}
-        >
-          {isAdding ? 'Adding...' : 'Add to Cart'} {/* Display "Adding..." when loading */}
-        </button>
-      </div>
-    );
-  };
+        <ProductDetail
+    product={product}
+    backLink="/products"
+    backLinkText="Back to Products"
+    onAddToCart={handleAddToCart}
+  />
+);
+};
 
 export default ProductDetailPage;

@@ -2,12 +2,47 @@
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
+import { CategoryType } from '@/lib/types';
+//import { fetchCategories } from '@/lib/api';
+import { Menu, X } from 'lucide-react';
 
-const Navbar: React.FC = () => {
-  const { userLogin, logout } = useAuth(); // Access user and authentication state
+interface NavbarProps {
+  categories: CategoryType[];
+}
+
+const Navbar = ({ categories }: NavbarProps) => {
+  const { userLogin, logout, isAuthenticated } = useAuth(); // Access user and authentication state
   const pathname = usePathname(); // To track the current route
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [isLoggedOut, setIsLoggedOut] = useState(false); 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  //const [categoriesNav, setCategoriesNav] = useState<CategoryType[]>([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const router = useRouter();
+  
+  // // Fetch categories on mount
+  // useEffect(() => {
+  //   const getCategories = async () => {
+  //     try {
+  //       const categoriesData = await fetchCategories();
+  //       setCategoriesNav(categoriesData);
+  //     } catch (error) {
+  //       console.error("Failed to fetch categories:", error);
+  //     }
+  //   };
+  //   getCategories();
+  // }, []);
+
+  
+  const handleCategoryClick = (categoryId: number | string) => {
+    setIsDropdownOpen(false); // Close the dropdown after category selection
+    router.push(`/products/categories/${categoryId}`); // Navigate to the selected category
+  };
+
+
   const handleLogout = () => {
     logout(); // Call the logout function from context
     setIsLoggedOut(true);
@@ -16,14 +51,19 @@ const Navbar: React.FC = () => {
   };
   
 
-  // Check if the current route is active
-  const isActive = (path: string) => pathname === path;
+  //const pathname = router.pathname;
+  const isActive = (path: string) => {
+    return pathname === path;
+  };
 
-  
-    return (
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
+  };
+
+  return (
     <nav className="bg-gray-800 p-4 text-white">
       <div className="container mx-auto flex justify-between items-center">
-       
+        {/* Left-side Links */}
         <div className="space-x-4">
           <Link
             href="/"
@@ -31,37 +71,80 @@ const Navbar: React.FC = () => {
           >
             Home
           </Link>
+          
+          <Link
+            href="/products"
+            className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
+          >
+            Products
+          </Link>
+        </div>
 
-            <Link
-                href="/products"
-                className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
+        {/* Hamburger Menu Icon */}
+        <button
+          className="lg:hidden text-white" // Visible only on small screens (lg:hidden hides on large screens)
+          onClick={toggleMenu} // Toggle menu on click
+        >
+          {isMenuOpen ? (
+            <X className="text-white" size={24} /> // Display the X icon to close the menu
+          ) : (
+            <Menu className="text-white" size={24} /> // Display the Menu icon to open the menu
+          )}
+        </button>
+
+        {/* Shop by Category Dropdown */}
+        <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="text-white hover:text-gray-300"
+              aria-haspopup="true"
+              aria-expanded={isDropdownOpen ? 'true' : 'false'}
+            >
+              New Arrivals
+            </button>
+            {isDropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
+                role="menu"
               >
-                Products
-              </Link>
-          {/* {isAuthenticated ? ( */}
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                    role="menuitem"
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+        {/* Right-side Links and User Info */}
+        <div className="space-x-4 flex items-center">
+          {isAuthenticated && !isLoggedOut ? (
             <>
-             
               <Link
                 href="/checkout"
                 className={`${isActive("/checkout") ? "text-gray-300" : "hover:text-gray-300"}`}
               >
                 Checkout
               </Link>
-              {!isLoggedOut ? (
-                <div>
-              <span className="text-gray-300">{userLogin?.name}!</span> 
-              <span
-                onClick={handleLogout}
-                className="hover:text-gray-300"
-              >
-                Logout
-            </span>
-            </div>
-            ) : (
-              <span className="text-green-500">Logout Successful</span>
-            )}
-              </>
-            
+              <div className="text-gray-300">
+                <span>{userLogin?.name}!</span>
+                <span
+                  onClick={handleLogout}
+                  className="cursor-pointer hover:text-gray-300"
+                >
+                  Logout
+                </span>
+              </div>
+            </>
+          ) : isLoggedOut ? (
+            <span className="text-green-500">Logout Successful</span>
+          ) : (
             <>
               <Link
                 href="/login"
@@ -76,8 +159,7 @@ const Navbar: React.FC = () => {
                 Sign Up
               </Link>
             </>
-
-          {/* )} */}
+          )}
         </div>
       </div>
     </nav>

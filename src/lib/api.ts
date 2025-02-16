@@ -147,6 +147,8 @@ export const fetchProductDetails = async (
       category: {
         id: data.category.id,
         name: data.category.name,
+        description: data.category.description || "",
+        image: data.category.image || "",
       },
     };
 
@@ -158,6 +160,47 @@ export const fetchProductDetails = async (
     throw new Error("Failed to fetch products");
   }
 };
+
+
+
+//-------------------------------------------
+export const fetchCategories = async (
+  baseUrl: string = BASE_URL // Allow overriding the base URL
+): Promise<CategoryType[]> => {
+  try {
+    // Fetch categories data
+    const response = await fetch(`${baseUrl}/categories`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Validate the response if needed (e.g., check if data is an array)
+    if (!Array.isArray(data)) {
+      console.error("Invalid categories data format:", data);
+      throw new Error("Invalid categories data format");
+    }
+
+    // Map the data to CategoryType interface if necessary (you can skip this if it's already correct)
+    const categories: CategoryType[] = data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+
+
+    }));
+
+    return categories;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new Error("Failed to fetch categories");
+  }
+};
+
+
 
 
   // Function to register a new user
