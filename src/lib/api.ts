@@ -2,7 +2,7 @@
 
 import {  
       ProductsType,   
-      //Category,
+      CategoryType,
       AuthResponse,
       LoginCredentials,
       RegisterData,    
@@ -112,10 +112,11 @@ export const fetchProducts = async (
 //-------------------------------------------
 // Function to fetch a single product by ID
 export const fetchProductDetails = async (
-  id: string,
+  id: string | number,
   baseUrl: string = BASE_URL // Allow overriding the base URL
 ): Promise<ProductsType | null> => {
   try {
+  
     // Fetch data
     const response = await fetch(`${baseUrl}/products/${id}`);
 

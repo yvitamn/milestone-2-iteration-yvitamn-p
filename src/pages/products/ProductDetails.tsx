@@ -1,95 +1,57 @@
 'use client';
-import Image from 'next/image'
-//import { GetStaticPaths, GetStaticProps } from 'next';
-//import { fetchProductDetails, fetchProducts } from '@/lib/api';
-import { ProductsType, Params } from '@/lib/types';
+import Image from 'next/image';
+import Link from "next/link";
+import { GetServerSideProps } from 'next';
+import { CategoryType, ProductsType } from '@/lib/types';
 import { useCart } from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 
 interface ProductDetailProps {
-  onAddToCart?: () => void;
+    onAddToCart?: () => void;
     product: ProductsType;
+    category: CategoryType; 
   }
   
-   
-  // This will fetch all product IDs during build time
-// export const getStaticPaths: GetStaticPaths<Params> = async () => {
-//     try {
-//       const products = await fetchProducts();
-//       console.log('Products fetched in getStaticPaths:', products); // Debugging
-
-//       if (!Array.isArray(products)) {
-//         throw new Error('Products data is not an array');
-//       }
-      
-//       // Generate paths for each product (ensure id is a string)
-//       const paths = products.map((product) => ({
-//         params: { id: product.id.toString() }, // Ensure id is a string
-//       }));
-//       console.log('Generated paths:', paths);
   
-//       return {
-//         paths,
-//         fallback: 'blocking', 
-//       };
-//     } catch (error) {
-//       console.error('Error fetching product paths:', error);
-//       return { paths: [], fallback: 'blocking' };
-//     }
-//   };
-  
-//   export const getStaticProps: GetStaticProps<ProductDetailProps, Params> = async (context) => {
-//     const { params } = context;
-  
+  export const getServerSideProps: GetServerSideProps<ProductDetailProps> = async (context) => {
+    const { id } = context.params as { id: string }; // Ensure id is a string
+    const productId = parseInt(id, 10);  //Parse the string id to a number
     
-//     console.log('Fetching product for ID:', id);
+    if (isNaN(productId)) {
+        return {
+        notFound: true, // If the id is not a valid number, return a 404 page
+        };
+    }
+    // Fetch product details
+    const productRes = await fetch(`https://api.escuelajs.co/api/v1/products/${id}`);
+    const product = await productRes.json();
   
-//     try {
-//       const product = await fetchProductDetails(id); // Fetch product by ID
-      
-//       console.log('Product fetched in getStaticProps:', product);
+    // Fetch category details using the product's categoryId
+    const categoryRes = await fetch(`https://api.escuelajs.co/api/v1/categories/${product.category.id}`);
+    const category = await categoryRes.json();
   
-//       if (!product) {
-//         return {
-//           notFound: true, // Return 404 if product is not found
-//         };
-//       } 
-//       return {
-//         props: {
-//           product,
-//           onAddToCart: () => {
-//             console.log('Product added to cart!');
-//           }, // Pass product data to the page
-//         },
-//       };
-//     } catch (error) {
-//       console.error('Error fetching product:', error);
-//       return {
-//         notFound: true, // Return 404 if there's an error
-//       };
-//         }
-//   };
+    return {
+      props: {
+        product,
+        category,
+      },
+    };
+  };
 
 
-const ProductDetailPage: React.FC<ProductDetailProps> = ({ onAddToCart, product }) => {
-    
+const ProductDetailPage = ({ onAddToCart, product, category }: ProductDetailProps) => {   
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const { addProductToCart } = useCart();
-    const [error, setError] = useState<string | null>(null);
-   const router = useRouter();
+   // const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
    //const { id } = router.query;
 
    if (router.isFallback) {
     return <div>Loading...</div>;
 }
-    // If product is not found, show error message
-  useEffect(() => {
-    if (!product) {
-      setError('Product not found');
-    }
-  }, [product]);
+    
 
   const handleAddToCart = async () => {
     if (product) {
@@ -118,10 +80,6 @@ const ProductDetailPage: React.FC<ProductDetailProps> = ({ onAddToCart, product 
       return <div>Product not found</div>;
     }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
     return (
         <div className="container mx-auto p-6">
         {/* Back Button */}
@@ -143,13 +101,19 @@ const ProductDetailPage: React.FC<ProductDetailProps> = ({ onAddToCart, product 
           height={400}
           className="rounded-lg mb-4"
         />
-  
+        {/* Product Price */}
+        <p>
+          <strong>Category</strong> {category.name}
+        </p>
+        <p className="text-xl font-semibold mb-4">${product.price}</p>
         {/* Product Description */}
         <p className="text-lg mb-4">{product.description}</p>
+        <Link href={`/categories/${category.id}`}>
+          <a>View more products in this category</a>
+        </Link>
+        
   
-        {/* Product Price */}
-        <p className="text-xl font-semibold mb-4">${product.price}</p>
-  
+
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}

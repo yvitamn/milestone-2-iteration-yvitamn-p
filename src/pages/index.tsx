@@ -1,15 +1,11 @@
 'use client';
 import Image from 'next/image'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link'; 
 import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 import { Search } from 'lucide-react';
-
-// interface HomePageProps {
-//   product: ProductsType[]; 
-// }
 
 export const getStaticProps: GetStaticProps = async () => {
  
