@@ -47,7 +47,6 @@ export async function handleApiError(error: unknown) {
 
 
 //--------------------------------------------------
-// Function to fetch all products with category
 export const fetchProducts = async (categoryId?: string | number): Promise<ProductsType[]> => {
   try {
     // If categoryId is passed, include it in the API request
@@ -110,7 +109,8 @@ export const fetchProducts = async (categoryId?: string | number): Promise<Produ
 };
 
 
-//----------------------------------------------------
+
+//-------------------------------------------
 // Function to fetch a single product by ID
 export const fetchProductDetails = async (id: string): Promise<ProductsType | null> => {
   try {

@@ -58,6 +58,7 @@ const sliceProducts = (allProducts: ProductsType[], startIndex: number, endIndex
   return allProducts.slice(startIndex, endIndex);
 }
 
+
   // Slice and paginate products for scrollable grid
   const handleScroll = (event: React.UIEvent) => {
     const grid = event.target as HTMLElement;
