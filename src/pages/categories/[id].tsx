@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { fetchCategories, fetchProductDetails } from '@/lib/api';
-import { ProductsType, CategoryType } from '@/lib/types';  // Assuming you have this type
+import { fetchCategories, fetchProductsByCategory } from '@/lib/api';
+import { ProductsType, CategoryType, Params } from '@/lib/types';  // Assuming you have this type
 import { GetStaticProps, GetStaticPaths } from 'next';
 //import { ProductDetail } from '@/components/ProductDetail';
 
@@ -19,46 +19,71 @@ export const getStaticPaths: GetStaticPaths = async () => {
   try {
         // Fetch all product IDs (you can create a separate function for this)
         const categories = await fetchCategories(); //  fetches the list of all products
-        const paths = categories.map((category) => ({
-          params: { id: category.id.toString() },
-        }));
-    
+        console.log('Categories:', categories.map(c => c.id));
+        console.log('Fetched categories:', categories);
+        
+        const paths = categories
+      .map((category: { id: string | any}) => {
+        // Ensure category has a valid ID
+        if (category?.id) { // Add optional chaining
+          return { 
+            params: { 
+              id: category.id.toString() // Convert ID to string explicitly
+            } 
+          }; 
+        }
+        return null;
+      })
+      .filter(Boolean) as { params: { id: string } }[];
+      console.log('Generated paths:', paths);
+
         return {
           paths,
-          fallback: false,  // Set to false to return 404 if the path doesn't exist
+          fallback: 'blocking',  // Set to false to return 404 if the path doesn't exist
         };
       } catch (error) {
         console.error('Error fetching categories:', error);
         return {
           paths: [],
-          fallback: false, 
+          fallback: 'blocking', 
         };
       } 
     };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const categoryId = params?.id;
-  //try{
-  const productsRes = await fetchProductDetails(parseInt(categoryId as string));
-  const products: ProductsType[] = await productsRes.json();
-
-  const categoryRes = await fetch('https://api.escuelajs.co/api/v1/categories');
-  const categories: CategoryType[] = await categoryRes.json();
-  const category = categories.find((cat) => cat.id === parseInt(categoryId as string));
-
-  if (!category) {
-    return { notFound: true };  // Return 404 if the category isn't found
+  if (!params?.id) {
+    // Return a 404 or handle the error if `id` is missing
+    return { notFound: true };
   }
+  
+  const { id } = params as Params;  
+  
+    if (!id) {
+      return { notFound: true };  // Return 404 if the category isn't found
+    }
+
+    try{
+    // Fetch the category details using the product's category ID
+    const categoryRes = await fetch(`https://api.escuelajs.co/api/v1/categories/category/${id}`);
+    const category: CategoryType[] = await categoryRes.json();
+
+    // Find the category that matches the product's category ID
+    //const category = categories.find((cat: CategoryType) => cat.id === categoryId);
+    const products = await fetchProductsByCategory(id);
+
 
   return {
-    props: {
-      products,
+    props: {    
       category,
+      products,
     },
     revalidate: 60,
   };
+}catch (error) {
+  console.error('Error fetching product data:', error);
+  return { notFound: true };  // Return a 404 page in case of error
+}
 };
-
 
 
 const ProductCategoryPage = ({ products, category }: ProductCategoryProps) => {
@@ -75,12 +100,12 @@ const ProductCategoryPage = ({ products, category }: ProductCategoryProps) => {
       //      setIsModalOpen(true); // Open the modal in the parent component
       //    };
    
-       if (!products) return <div>Product not found</div>;
+      if (!category || !products) return <div>Loading...</div>;
    
        return (
         <div className="container mx-auto px-4 py-10">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-          {category.name} - Products
+          {category.name} 
         </h1>
   
         {/* Search input */}

@@ -2,7 +2,7 @@
 import type { AppProps } from 'next/app';
 import { AuthenticateProvider } from '@/lib/contexts/AuthenticateProvider';
 import { CartProvider } from '@/lib/contexts/CartProvider';
-//import  Layout from '@/components/Layout';
+import  LayoutUser from '@/components/LayoutUser';
 //import withPrivateRoute from '@/lib/hoc/withPrivateRoute';
 import '@/styles/globals.css'; 
 import React from 'react';
@@ -17,11 +17,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       {/* <ModalProvider> */}
          {/* Use Suspense to handle the fallback UI while Layout is loading */}
          {/* <Suspense fallback={<div>Loading...</div>}> */}
-      {/* <Layout> */}
+      {/* <LayoutUser> */}
      
         <Component {...pageProps} />
       
-      {/* </Layout> */}
+      {/* </LayoutUser> */}
       {/* </Suspense> */}
       {/* </ModalProvider> */}
       </CartProvider>

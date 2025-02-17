@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {  ProductsType } from '@/lib/types';
+import {  ProductsType, CategoryType } from '@/lib/types';
 import useCart from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 interface ProductDetailProps {
   product: ProductsType;
-  //category: CategoryType;
+  category: CategoryType;
   backLink: string;
   backLinkText: string;
   onAddToCart: () => void;
@@ -15,7 +15,7 @@ interface ProductDetailProps {
 
 export const ProductDetail = ({ 
     product, 
-    //category, 
+    category, 
     onAddToCart, 
     backLink, 
     backLinkText 
@@ -83,7 +83,7 @@ export const ProductDetail = ({
          // objectFit="cover"
         />
 
-        {/* Product Price
+        //Product Price
         <p>
           <strong>category</strong> {category.name}
         </p>
@@ -93,7 +93,7 @@ export const ProductDetail = ({
         <Link href={`/categories/${category.id}`}>
           <a>view more products in this category</a>
         </Link>
-         */}
+       
   
 
         {/* Add to Cart Button */}

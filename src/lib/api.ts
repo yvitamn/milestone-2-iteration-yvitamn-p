@@ -57,6 +57,7 @@ export const validateProductData = (product: any): boolean => {
     product.category
   );
 };
+
 //--------------------------------------------------
 // Function to fetch products
 export const fetchProducts = async (
@@ -137,7 +138,7 @@ export const fetchProductDetails = async (
 
     // Map the data to the ProductsType interface
     const product: ProductsType = {
-      id: data.id,
+      id: data.id.toString(),
       title: data.title,
       description: data.description || "",
       price: data.price,
@@ -159,6 +160,55 @@ export const fetchProductDetails = async (
     throw new Error("Failed to fetch products");
   }
 };
+
+
+//----------------------------------------------
+// Function to fetch products by category
+export const fetchProductsByCategory = async (
+  categoryId: string | number, // Category ID to fetch products for
+  baseUrl: string = BASE_URL // Allow overriding the base URL
+): Promise<ProductsType[]> => {
+  try {
+    // Build the URL for fetching products by category ID
+    const url = `${baseUrl}/products/?categoryId=${categoryId}`;
+
+    // Fetch data
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Validate the response
+    if (!Array.isArray(data) || !data.every(validateProductData)) {
+      throw new Error("Invalid data format");
+    }
+
+    // Map the data to the ProductsType interface
+    const mappedProducts: ProductsType[] = data.map((product) => ({
+      id: product.id.toString(),
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.images[0], // Use the first image
+      quantity: 1, // Default quantity
+      category: {
+        id: product.category.id,
+        name: product.category.name,
+      },
+    }));
+
+    return mappedProducts;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new Error("Failed to fetch products by category");
+  }
+};
+
 
 
 
@@ -184,7 +234,7 @@ export const fetchCategories = async (
 
     // Map the data to CategoryType interface if necessary (you can skip this if it's already correct)
     const categories: CategoryType[] = data.map((item: any) => ({
-      id: item.id,
+      id: item.id.toString(),
       name: item.name,
 
 

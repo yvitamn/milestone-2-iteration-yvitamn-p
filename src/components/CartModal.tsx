@@ -5,7 +5,7 @@ import { CartSummary } from '@/components/CartSummary';
 import { useAuth } from '@/hooks/useAuth';
 import { CartModalProps } from '@/lib/types';
 import { useRouter } from 'next/router';
-import { ShoppingCart, CheckCircle, X } from 'lucide-react';
+import { ShoppingCart, X } from 'lucide-react';
 
 const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
   const { isAuthenticated } = useAuth();  // Get auth status
@@ -50,6 +50,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
     };
 
 
+    
 
       if (!isOpen) return null; // If modal isn't open, don't render
 
@@ -78,7 +79,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         />
 
 
-        
+
       </div>
     </div>
   );

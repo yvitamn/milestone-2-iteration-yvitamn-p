@@ -1,6 +1,6 @@
 'use client';
 
-//import { ParsedUrlQuery } from 'querystring';
+import { ParsedUrlQuery } from 'querystring';
 
 // Frontend representation of a product
 export interface ProductsType {
@@ -14,9 +14,9 @@ export interface ProductsType {
   }
 
 
-  export interface Params {
-    //id: string; 
-    categoryId: string;
+  export interface Params extends ParsedUrlQuery {
+    id: string; 
+    
   }
 
  // Category information

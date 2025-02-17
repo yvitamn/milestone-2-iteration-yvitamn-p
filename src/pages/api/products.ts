@@ -5,7 +5,7 @@ import { handleResponse, ApiError, handleApiError } from '@/lib/api';
 
 const cache = new NodeCache({ stdTTL: 600 }); // Cache for 10 minutes
 
-export default async function handler(_: unknown, res: NextApiResponse) {
+export default async function handler(_: NextApiRequest, res: NextApiResponse) {
   const cacheKey = 'all-products';
 
   // Check if data is cached
@@ -19,6 +19,11 @@ try {
   const response = await fetch('https://api.escuelajs.co/api/v1/products');
   const data = await handleResponse(response);
   
+    // Validate data shape
+    if (!Array.isArray(data)) {
+        return res.status(500).json({ message: 'Invalid data structure from API' });
+  }
+
   // Cache the data
   cache.set(cacheKey, data);
 

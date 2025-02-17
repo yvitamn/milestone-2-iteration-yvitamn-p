@@ -18,7 +18,7 @@ const Navbar = ({ categories }: NavbarProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isLoggedOut, setIsLoggedOut] = useState(false); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  //const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const router = useRouter();
   
@@ -56,22 +56,15 @@ const Navbar = ({ categories }: NavbarProps) => {
     return pathname === path;
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
-  };
+  // const toggleMenu = () => {
+  //   setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
+  // };
 
   return (
     <nav className="bg-gray-800 p-4 text-white">
     <div className="container mx-auto flex justify-between items-center">
       {/* Left-side Links */}
       <div className="space-x-4 hidden lg:flex">
-        <Link
-          href="/"
-          className={`${isActive("/") ? "text-gray-300" : "hover:text-gray-300"}`}
-        >
-          Home
-        </Link>
-        
         <Link
           href="/products"
           className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
@@ -80,57 +73,38 @@ const Navbar = ({ categories }: NavbarProps) => {
         </Link>
 
         {/* Shop by Category Dropdown */}
-        <nav className="bg-gray-800 p-4 text-white"></nav>
-        <div className="container mx-auto flex justify-between items-center">
-       {/* Left-side Links */}
-       <div className="space-x-4 hidden lg:flex">
-          <Link
-            href="/"
-            className={`${isActive("/") ? "text-gray-300" : "hover:text-gray-300"}`}
+        <div className="relative inline-block text-left">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-white hover:text-gray-300"
           >
-            Home
-          </Link>
-          
-          <Link
-            href="/products"
-            className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
-          >
-            Products
-          </Link>
-          {/* Shop by Category Dropdown */}
-          <div className="relative inline-block text-left">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="text-white hover:text-gray-300"
-            >
-              Categories
-              {isDropdownOpen ? (
-                <ChevronUp className="inline ml-1" size={16} />
-              ) : (
-                <ChevronDown className="inline ml-1" size={16} />
-              )}
-            </button>
-
-         {isDropdownOpen && (
-              <div
-                className="absolute left-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
-                ref={dropdownRef}
-                role="menu"
-              >
-                {/* Use the CategoryList component here */}
-                <CategoryList
-                  categories={categories}
-                  onCategorySelect={handleCategoryClick} // Pass the function to handle category selection
-                />
-              </div>
+            Categories
+            {isDropdownOpen ? (
+              <ChevronUp className="inline ml-1" size={16} />
+            ) : (
+              <ChevronDown className="inline ml-1" size={16} />
             )}
-          </div>
+          </button>
+
+          {isDropdownOpen && (
+            <div
+              className="absolute left-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
+              ref={dropdownRef}
+              role="menu"
+            >
+              {/* Use the CategoryList component here */}
+              <CategoryList
+                categories={categories}
+                onCategorySelect={handleCategoryClick} // Pass the function to handle category selection
+              />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Right-side Links and User Info */}
       <div className="space-x-4 flex items-center">
-        {isAuthenticated ? (
+        {isAuthenticated && !isLoggedOut ? (
           <>
             <Link
               href="/checkout"
@@ -165,7 +139,6 @@ const Navbar = ({ categories }: NavbarProps) => {
           </>
         )}
       </div>
-    </div>
     </div>
   </nav>
 );

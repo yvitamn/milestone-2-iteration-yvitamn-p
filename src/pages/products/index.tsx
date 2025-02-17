@@ -56,6 +56,7 @@ const ProductPage = ({ products }: ProductsPageProps) => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="p-2 w-64 border border-gray-300 rounded-lg"
+        aria-label="Search products"
       />
     </div>
 
