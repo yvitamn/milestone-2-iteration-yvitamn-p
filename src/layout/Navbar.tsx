@@ -25,7 +25,7 @@ const Navbar = ({ categories }: NavbarProps) => {
     
   const handleCategoryClick = (categoryId: number | string) => {
     setIsDropdownOpen(false); // Close the dropdown after category selection
-    router.push(`/products/categories/${categoryId}`); // Navigate to the selected category
+    router.push(`/categories/${categoryId}`); // Navigate to the selected category
   };
 
   useEffect(() => {

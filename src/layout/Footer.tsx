@@ -1,4 +1,4 @@
-//'use client';
+'use client';
 import React from 'react';
 
 const Footer: React.FC = () => {
@@ -7,16 +7,25 @@ const Footer: React.FC = () => {
       <div className="container mx-auto text-center">
         <p>&copy; 2025 ShopSmart. All rights reserved.</p>
         <div className="mt-4 space-x-4">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">
-            Facebook
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">
-            Twitter
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">
-            Instagram
-          </a>
-        </div>
+  <div
+    onClick={() => window.open('https://facebook.com', '_blank')}
+    className="cursor-pointer hover:text-gray-400"
+  >
+    Facebook
+  </div>
+  <div
+    onClick={() => window.open('https://twitter.com', '_blank')}
+    className="cursor-pointer hover:text-gray-400"
+  >
+    Twitter
+  </div>
+  <div
+    onClick={() => window.open('https://instagram.com', '_blank')}
+    className="cursor-pointer hover:text-gray-400"
+  >
+    Instagram
+  </div>
+</div>
       </div>
     </footer>
   );

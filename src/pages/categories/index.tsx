@@ -1,4 +1,4 @@
-//'use client';
+'use client';
 import { GetStaticProps } from 'next';
 import { fetchCategories } from '@/lib/api';
 import { CategoryType } from '@/lib/types';

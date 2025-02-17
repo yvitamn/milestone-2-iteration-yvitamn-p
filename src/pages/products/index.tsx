@@ -62,24 +62,23 @@ const ProductPage = ({ products }: ProductsPageProps) => {
 
      {/* Display filtered products */}
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {filteredProducts.length > 0 ? (
-        filteredProducts.map((product) => (
-          <div key={product.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-          {/* Wrap the image inside a Link to navigate to the category page */}
-          <Link href={`/products/${product.id}`}>
-            <div className="relative w-full h-64 mb-4">
-              <Image
-                src={product.imageUrl}
-                alt={product.title}
-                width={500}
-                height={400}
-                className="rounded-lg object-cover"
-              />
-            </div>
-          </Link>
-              <h3 className="text-xl font-semibold text-gray-800">{product.title}</h3>
-              <p className="text-xl font-bold text-green-600 mt-4">${product.price}</p>
-            </div>       
+    {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <Link key={product.id} href={`/products/${product.id}`}>
+              <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+                <div className="relative w-full h-64 mb-4">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.title}
+                    width={500}
+                    height={400}
+                    className="rounded-lg object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800">{product.title}</h3>
+                <p className="text-xl font-bold text-green-600 mt-4">${product.price}</p>
+              </div>
+            </Link>     
         ))
       ) : (
         <p>No products found matching your search.</p>

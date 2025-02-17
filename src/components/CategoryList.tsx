@@ -1,3 +1,4 @@
+'use client';
 import { CategoryType } from '@/lib/types';
 import Link from 'next/link';
 
@@ -26,12 +27,12 @@ const CategoryList = ({
           key={category.id}
           href={`/products/categories/${category.id}`}  // Adjusted route for category detail
         >
-          <a
-            onClick={() => onCategorySelect(category.id)}  // Optionally call a function when clicked
-            className="block px-4 py-2 text-left hover:bg-gray-100"
+          <div
+            onClick={() => onCategorySelect(category.id)} // Optionally call a function when clicked
+            className="block px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
           >
             {category.name}
-          </a>
+          </div>
         </Link>
       ))}
     </div>

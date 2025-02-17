@@ -17,11 +17,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       {/* <ModalProvider> */}
          {/* Use Suspense to handle the fallback UI while Layout is loading */}
          {/* <Suspense fallback={<div>Loading...</div>}> */}
-      {/* <LayoutUser> */}
+      <LayoutUser>
      
         <Component {...pageProps} />
       
-      {/* </LayoutUser> */}
+      </LayoutUser>
       {/* </Suspense> */}
       {/* </ModalProvider> */}
       </CartProvider>

@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import Image from 'next/image';
 import {  ProductsType, CategoryType } from '@/lib/types';
@@ -66,7 +67,7 @@ export const ProductDetail = ({
     return (
     <div className="container mx-auto p-6">
         <Link href={backLink}>
-            <a className="back-button mb-6">{backLinkText}</a>
+            <span className="back-button mb-6">{backLinkText}</span>
         </Link>
 
         {/* Product Title */}
@@ -90,9 +91,9 @@ export const ProductDetail = ({
         <p className="text-xl font-semibold mb-4">${product.price}</p>
          //Product Description 
         <p className="text-lg mb-4">{product.description}</p>
-        <Link href={`/categories/${category.id}`}>
-          <a>view more products in this category</a>
-        </Link>
+         <Link href={`/categories/${category.id}`}>
+          <span className="cursor-pointer">view more products in this category</span>
+        </Link>  
        
   
 
