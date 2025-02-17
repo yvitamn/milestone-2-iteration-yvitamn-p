@@ -5,7 +5,7 @@ import { CartSummary } from '@/components/CartSummary';
 import { useAuth } from '@/hooks/useAuth';
 import { CartModalProps } from '@/lib/types';
 import { useRouter } from 'next/router';
-
+import { ShoppingCart, CheckCircle, X } from 'lucide-react';
 
 const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
   const { isAuthenticated } = useAuth();  // Get auth status
@@ -60,10 +60,14 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           onClick={onClose}
           className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-800"
         >
-          &times;
+         <X />
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Your Cart</h2>
+        {/* Modal Header with ShoppingCart Icon */}
+        <h2 className="text-2xl font-bold mb-4 text-center flex justify-center items-center gap-2">
+          <ShoppingCart size={24} /> {/* Cart Icon */}
+          Your Cart
+        </h2>
 
         {/* Pass props to CartSummary for cart-related logic */}
         <CartSummary       
@@ -72,6 +76,9 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         onCompleteCheckout={handleCompleteCheckout}     // Function to complete checkout                     
         updateProductQuantity={handleQuantityChange}  // Function to update quantity   
         />
+
+
+        
       </div>
     </div>
   );

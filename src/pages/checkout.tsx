@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/hooks/useCart'; 
 import { useAuth } from '@/hooks/useAuth';
-import { ThankYouModal } from '@/components/ThankYouModal';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { User } from '@/lib/types';
 import { fetchUserData } from '@/lib/apiUser';
 import { useUserData } from '@/hooks/useUserData';
-
+import { CheckCircle } from 'lucide-react'; 
 
 
 interface CheckoutPageProps {
@@ -48,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 
-const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
+const Checkout = ({ userCheckout }: CheckoutPageProps) => {
     const { isAuthenticated } = useAuth(); //add userData here?
     const { userFetched, errorUserData } = useUserData(isAuthenticated);
     const { addedProducts, clearCart } = useCart(); // Get the cart items
@@ -128,7 +127,10 @@ const Checkout: React.FC<CheckoutPageProps> = ({ userCheckout }) => {
       )}
 
       {orderSuccess ? (
-        <ThankYouModal />
+        <div className="text-center mt-6">
+        <CheckCircle className="text-green-500 mx-auto" size={48} />
+        <p className="text-green-600 text-xl mt-4">Your order was successful!</p>
+    </div>
       ) : (
         <div>
           {addedProducts.length === 0 ? (

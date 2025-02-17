@@ -114,7 +114,7 @@ export const fetchProducts = async (
 export const fetchProductDetails = async (
   id: string | number,
   baseUrl: string = BASE_URL // Allow overriding the base URL
-): Promise<ProductsType | null> => {
+): Promise<ProductsType> => {
   try {
   
     // Fetch data
@@ -123,7 +123,6 @@ export const fetchProductDetails = async (
     if (!response.ok) {
       if (response.status === 404) {
         console.error(`Product with ID ${id} not found.`);
-        return null;
       }
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

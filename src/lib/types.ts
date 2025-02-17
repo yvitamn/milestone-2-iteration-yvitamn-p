@@ -28,8 +28,6 @@ export interface CategoryType {
   }
 
 
-
-
       export interface ApiErrorData {
     message: string;
     statusCode?: number;

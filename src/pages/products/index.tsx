@@ -1,13 +1,16 @@
 'use client';
-import Image from 'next/image'
+import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link'; 
 import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 import { Search } from 'lucide-react';
-import { useRouter } from 'next/router';
+//import { useRouter } from 'next/router';
 
+interface ProductsPageProps {
+  products: ProductsType[];
+}
 
 export const getStaticProps: GetStaticProps = async () => {
  try{
@@ -31,10 +34,9 @@ export const getStaticProps: GetStaticProps = async () => {
 
 
 
-const ProductPage = ({ products }: { products: ProductsType[] }) => {
-  
+const ProductPage = ({ products }: ProductsPageProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const router = useRouter();
+  //const router = useRouter();
 
   // Filter products based on the search term
   const filteredProducts = products.filter((product) => 
@@ -63,7 +65,7 @@ const ProductPage = ({ products }: { products: ProductsType[] }) => {
         filteredProducts.map((product) => (
           <div key={product.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
           {/* Wrap the image inside a Link to navigate to the category page */}
-          <Link href={`/products/categories/${product.category.id}`}>
+          <Link href={`/products/${product.id}`}>
             <div className="relative w-full h-64 mb-4">
               <Image
                 src={product.imageUrl}
