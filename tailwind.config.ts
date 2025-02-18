@@ -6,8 +6,13 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/layout/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/products/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/category/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/categories/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/styles/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/login/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/signup/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/checkout/**/*.{js,ts,jsx,tsx,mdx}",
+    
+
    // "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {

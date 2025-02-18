@@ -5,24 +5,21 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { CategoryType } from '@/lib/types';
-import CategoryList from '@/components/CategoryList';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShoppingCart, User, LogOut, List, ShoppingBag } from 'lucide-react';
 
 interface NavbarProps {
   categories: CategoryType[];
 }
-
 const Navbar = ({ categories }: NavbarProps) => {
   const { userLogin, logout, isAuthenticated } = useAuth(); // Access user and authentication state
-  const pathname = usePathname(); // To track the current route
+  const pathname = usePathname(); 
+  const router = useRouter();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isLoggedOut, setIsLoggedOut] = useState(false); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  //const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const router = useRouter();
   
-    
+
   const handleCategoryClick = (categoryId: number | string) => {
     setIsDropdownOpen(false); // Close the dropdown after category selection
     router.push(`/categories/${categoryId}`); // Navigate to the selected category
@@ -53,7 +50,7 @@ const Navbar = ({ categories }: NavbarProps) => {
 
   //const pathname = router.pathname;
   const isActive = (path: string) => {
-    return pathname === path;
+    return pathname === path ? "text-gray-300" : "hover:text-gray-300";
   };
 
   // const toggleMenu = () => {
@@ -63,22 +60,29 @@ const Navbar = ({ categories }: NavbarProps) => {
   return (
     <nav className="bg-gray-800 p-4 text-white">
     <div className="container mx-auto flex justify-between items-center">
-      {/* Left-side Links */}
-      <div className="space-x-4 hidden lg:flex">
-        <Link
-          href="/products"
-          className={`${isActive("/products") ? "text-gray-300" : "hover:text-gray-300"}`}
-        >
-          Products
-        </Link>
+      <ul className="flex space-x-4">
+        {/* Home Link */}
+        <li>
+          <Link href="/" className={isActive("/")}>
+            Home
+          </Link>
+        </li>
 
-        {/* Shop by Category Dropdown */}
-        <div className="relative inline-block text-left">
+        {/* Products Link */}
+        <li>
+          <Link href="/products" className={isActive("/products")}>
+            <ShoppingBag className="inline mr-1" size={18} /> Products
+          </Link>
+        </li>
+
+        {/* Categories Dropdown */}
+        <li className="relative inline-block text-left">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="text-white hover:text-gray-300"
           >
-            Categories
+            {/* Updated icon size to larger one (size={24}) */}
+            <List className="inline mr-2" size={24} /> Categories {/* Larger icon */}
             {isDropdownOpen ? (
               <ChevronUp className="inline ml-1" size={16} />
             ) : (
@@ -88,53 +92,58 @@ const Navbar = ({ categories }: NavbarProps) => {
 
           {isDropdownOpen && (
             <div
-              className="absolute left-0 mt-2 w-48 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
+              className="absolute left-0 mt-2 w-96 bg-black bg-opacity-50 text-white border border-gray-300 rounded-lg shadow-lg"
               ref={dropdownRef}
               role="menu"
             >
-              {/* Use the CategoryList component here */}
-              <CategoryList
-                categories={categories}
-                onCategorySelect={handleCategoryClick} // Pass the function to handle category selection
-              />
+              <ul className="py-2">
+                {/* Iterate over categories and display each one */}
+                {categories.map((category) => (
+                  <li
+                    key={category.id}
+                    className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                  >
+                    <span onClick={() => handleCategoryClick(category.id)}>
+                      {category.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-        </div>
-      </div>
+        </li> {/* Added closing </li> tag */}
 
-      {/* Right-side Links and User Info */}
-      <div className="space-x-4 flex items-center">
+        {/* Checkout Link */}
+        {isAuthenticated && !isLoggedOut && (
+          <li>
+            <Link href="/checkout" className={isActive("/checkout")}>
+              <ShoppingCart className="inline mr-1" size={18} /> Checkout
+            </Link>
+          </li>
+        )}
+      </ul>
+
+      {/* User Links (Login/SignUp or User Profile + Logout) */}
+      <div className="flex items-center space-x-4">
         {isAuthenticated && !isLoggedOut ? (
           <>
-            <Link
-              href="/checkout"
-              className={`${isActive("/checkout") ? "text-gray-300" : "hover:text-gray-300"}`}
+            <span className="text-gray-300">
+              <span>{userLogin?.name}</span>
+            </span>
+            <span
+              onClick={handleLogout}
+              className="cursor-pointer hover:text-gray-300 ml-4"
             >
-              Checkout
-            </Link>
-            <div className="text-gray-300">
-              <span>{userLogin?.name}!</span>
-              <span
-                onClick={handleLogout}
-                className="cursor-pointer hover:text-gray-300"
-              >
-                Logout
-              </span>
-            </div>
+              <LogOut className="inline mr-1" size={18} /> Logout
+            </span>
           </>
         ) : (
           <>
-            <Link
-              href="/login"
-              className={`${isActive("/login") ? "text-gray-300" : "hover:text-gray-300"}`}
-            >
-              Login
+            <Link href="/login" className={isActive("/login")}>
+              <User className="inline mr-1" size={18} /> Login
             </Link>
-            <Link
-              href="/signup"
-              className={`${isActive("/signup") ? "text-gray-300" : "hover:text-gray-300"}`}
-            >
-              Sign Up
+            <Link href="/signup" className={isActive("/signup")}>
+              <User className="inline mr-1" size={18} /> Sign Up
             </Link>
           </>
         )}
@@ -143,5 +152,4 @@ const Navbar = ({ categories }: NavbarProps) => {
   </nav>
 );
 };
-
 export default Navbar;

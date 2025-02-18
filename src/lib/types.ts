@@ -1,4 +1,4 @@
-'use client';
+
 
 import { ParsedUrlQuery } from 'querystring';
 
@@ -27,8 +27,8 @@ export interface CategoryType {
     image?: string; // URL of the category image
   }
 
-
-      export interface ApiErrorData {
+// Error data format
+  export interface ApiErrorData {
     message: string;
     statusCode?: number;
   }
@@ -49,27 +49,25 @@ export interface CategoryType {
   export interface User {
     id: number;
     email: string;
+    name: string;
     //cart: CartItem[]; 
-    name: string; 
+     
 } 
  
-// Include user info in authres
-export interface AuthResponse {
-    access_token: string;
-    id: number;
-    email: string;
-    name: string; 
-  // token_type: string;
-  // expires_in: number;
-  }
+  // AuthResponse (includes User data and access token)
+  export interface AuthResponse extends User{
+      access_token: string;
+      
+    }
 
-  export interface AuthResponseWithPurchase extends AuthResponse {
-    lastPurchase?: { 
-      productId: number;
-      name: string;
-      price: number;
-    }[]; 
-  }
+    // AuthResponseWithPurchase (extends User and adds optional purchase history)
+  export interface AuthResponseWithPurchase extends User {
+        lastPurchase?: { 
+        productId: number;
+        name: string; 
+        price: number;
+      }[]; 
+    }
   
   // export interface CheckoutFormData {
   //   email: string;

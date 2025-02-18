@@ -1,11 +1,9 @@
 'use client';
-
 import { apiLogin, apiRegister } from '@/lib/api';
 import { useState, useEffect, ReactNode } from 'react';
 import { AuthContext, AuthContextType } from '@/lib/contexts/AuthContext';  // Import the context
 import { User, AuthResponse, LoginCredentials, RegisterData } from '@/lib/types';
 import { useUserData } from '@/hooks/useUserData'; 
-//import { useAuth } from '@/hooks/useAuth';
 
 
 // Provider component that wraps the app and provides authentication state
@@ -13,8 +11,7 @@ export const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null); 
-  const [userLogin, setUserLogin] = useState<User | null>(null); // For login state
-  //const [loadingUser, setLoadingUser] = useState<boolean>(true);
+  const [userLogin, setUserLogin] = useState<User | null>(null); 
   const [errorUser, setErrorUser] = useState<string | null>(null);
   
   // Using useUserData hook to fetch user data based on token
@@ -42,26 +39,7 @@ useEffect(() => {
       setIsAuthenticated(true); // User is authenticated if token exists
     }
   }, []);
-// // Check if the user is authenticated (on page load)
-// useEffect(() => {
-//   const storedUser = localStorage.getItem('user');
-//   const storedToken = localStorage.getItem('token'); // Fetch the token
 
-//   if (storedUser && storedToken) {
-//     try {
-//       const parsedUser: User = JSON.parse(storedUser);
-//       setUser(parsedUser);
-//       setIsAuthenticated(true);
-//     } catch (error) {
-//       console.error('Error parsing user data:', error);
-//       localStorage.removeItem('user');
-//       localStorage.removeItem('token');
-//       setUser(null);
-//       setToken(null);
-//       setIsAuthenticated(false);
-//     }
-//   }
-// }, []);
 
 
 const handleLogin = async ({ email, password }: LoginCredentials) => {

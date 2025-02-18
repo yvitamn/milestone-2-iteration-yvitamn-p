@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import LoginPage from '@/components/LoginPage';
 import SignupPage from '@/components/SignupPage';
 
-const checkoutAuth = () => {
+const CheckoutAuth = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(true); // Toggle between login and signup pages
  // const router = useRouter();
 
@@ -29,4 +29,4 @@ const checkoutAuth = () => {
   );
 };
 
-export default checkoutAuth;
+export default CheckoutAuth;

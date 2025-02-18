@@ -25,7 +25,7 @@ const CategoryList = ({
       {categories.map((category) => (
         <Link
           key={category.id}
-          href={`/products/categories/${category.id}`}  // Adjusted route for category detail
+          href={`/categories/${category.id}`}  // Adjusted route for category detail
         >
           <div
             onClick={() => onCategorySelect(category.id)} // Optionally call a function when clicked

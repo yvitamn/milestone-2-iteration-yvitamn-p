@@ -1,4 +1,4 @@
-'use client';
+
 
 import {  
       ProductsType,   
@@ -59,7 +59,7 @@ export const validateProductData = (product: any): boolean => {
 };
 
 //--------------------------------------------------
-// Function to fetch products
+// Function to fetch all products
 export const fetchProducts = async (
   categoryId?: string | number,
   baseUrl: string = BASE_URL // Allow overriding the base URL
@@ -219,13 +219,14 @@ export const fetchCategories = async (
   try {
     // Fetch categories data
     const response = await fetch(`${baseUrl}/categories`);
+    console.log('Fetching categories from:', `${baseUrl}/categories`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const data = await response.json();
-
+    console.log('Fetched data:', data);
     // Validate the response if needed (e.g., check if data is an array)
     if (!Array.isArray(data)) {
       console.error("Invalid categories data format:", data);
@@ -236,10 +237,8 @@ export const fetchCategories = async (
     const categories: CategoryType[] = data.map((item: any) => ({
       id: item.id.toString(),
       name: item.name,
-
-
     }));
-
+ console.log('Mapped Categories:', categories); 
     return categories;
   } catch (error) {
     if (error instanceof ApiError) {

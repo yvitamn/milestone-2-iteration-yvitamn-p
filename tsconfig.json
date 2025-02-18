@@ -33,11 +33,20 @@
       "@pages/*": [
         "pages/*"
       ],
-      "@products/*": [
-        "pages/products"
+      "@login/*": [
+        "pages/login/*"
       ],
-      "@category/*": [
-        "pages/products/category"
+      "@signup/*": [
+        "pages/signup/*"
+      ],
+      "@products/*": [
+        "pages/products/*"
+      ],
+      "@categories/*": [
+        "pages/products/categories/*"
+      ],
+      "@checkout/*": [
+        "pages/checkout/*"
       ],
       "@lib/*": [
         "lib/*"

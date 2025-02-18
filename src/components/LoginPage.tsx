@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
 
 
-const Login: React.FC = () => {
+const LoginPage: React.FC = () => {
   const { isAuthenticated, login } = useAuth(); // Access auth functions
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -99,4 +99,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
