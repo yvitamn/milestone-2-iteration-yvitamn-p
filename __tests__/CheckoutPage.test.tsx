@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CheckoutPage from './CheckoutPage'; // Adjust the path as necessary
+import CheckoutPage from '@/components/CheckoutPage'; // Adjust the path as necessary
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useUserData } from '@/hooks/useUserData';
