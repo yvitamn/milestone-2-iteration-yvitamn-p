@@ -11,8 +11,9 @@ interface ProductDetailProps {
     onAddToCart: () => void;
     product: ProductsType;
     category: CategoryType; 
-  }
-  
+    
+}
+
   export const getStaticPaths: GetStaticPaths = async () => {
     try{
     const products = await fetchProducts();
@@ -62,10 +63,17 @@ interface ProductDetailProps {
         if (!category) {           
       return { notFound: true }; 
       }
-      return {
+
+      // Fetch related products (you can adjust the logic as needed for fetching related products)
+    // const allProducts = await fetchProducts();
+    // const relatedProducts = allProducts.filter((p: ProductsType) => p.category.id === product.category.id && p.id !== product.id);
+      
+    return {
         props: {
           product,
           category,
+          
+
         },
         revalidate: 60, // Optional: revalidate the page after 60 seconds (optional for ISR)
       };

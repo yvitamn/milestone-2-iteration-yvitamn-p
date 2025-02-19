@@ -2,15 +2,15 @@
 import { CategoryType } from '@/lib/types';
 import Link from 'next/link';
 
-interface CategoryListProps {
+interface CategorySelectProps {
   categories: CategoryType[];
   onCategorySelect: (categoryId: number | string) => void;  // Callback when a category is selected
 }
 
-const CategoryList = ({ 
+const CategorySelect = ({ 
     categories, 
     onCategorySelect 
-}: CategoryListProps) => {
+}: CategorySelectProps) => {
 
 
 // const router = useRouter();
@@ -39,4 +39,4 @@ const CategoryList = ({
   );
 };
 
-export default CategoryList;
+export default CategorySelect;

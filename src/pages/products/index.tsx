@@ -6,7 +6,7 @@ import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 import { Search } from 'lucide-react';
-//import { useRouter } from 'next/router';
+//import ProductGrid from '@/components/theme/ProductGrid';
 
 interface ProductsPageProps {
   products: ProductsType[];
@@ -15,7 +15,7 @@ interface ProductsPageProps {
 export const getStaticProps: GetStaticProps = async () => {
  try{
     const products = await fetchProducts();  // This will return an array of all products
- 
+    console.log(products); 
   return {
     props: {
       products,  // Pass the products array as props to the page
@@ -39,9 +39,11 @@ const ProductPage = ({ products }: ProductsPageProps) => {
   //const router = useRouter();
 
   // Filter products based on the search term
-  const filteredProducts = products.filter((product) => 
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) // Match search term with product title
-  );
+  const filteredProducts = Array.isArray(products) 
+  ? products.filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) // Match search term with product title
+    )
+  : [];
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -83,6 +85,8 @@ const ProductPage = ({ products }: ProductsPageProps) => {
       ) : (
         <p>No products found matching your search.</p>
       )}
+      {/* Display filtered products in grid format */}
+      {/* <ProductGrid products={filteredProducts} /> */}
     </div>
   </div>
 );

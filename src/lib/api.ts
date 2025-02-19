@@ -27,6 +27,7 @@ export class ApiError extends Error {
 export async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    
     throw new ApiError(response.status, error.message || "API Error", error);
   }
   return response.json();
@@ -247,7 +248,6 @@ export const fetchCategories = async (
     throw new Error("Failed to fetch categories");
   }
 };
-
 
 
 

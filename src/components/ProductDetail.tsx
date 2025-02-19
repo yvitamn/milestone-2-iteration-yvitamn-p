@@ -6,6 +6,7 @@ import useCart from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+
 interface ProductDetailProps {
   product: ProductsType;
   category: CategoryType;
@@ -14,10 +15,7 @@ interface ProductDetailProps {
   onAddToCart: () => void;
 }
 
-export const ProductDetail = ({ 
-    product, 
-    category, 
-    onAddToCart, 
+export const ProductDetail = ({  product, category, onAddToCart, 
     backLink, 
     backLinkText 
 }: ProductDetailProps) => {
@@ -43,22 +41,17 @@ export const ProductDetail = ({
           setIsAdding(true); // Set loading state to true before adding
           try {
             await addProductToCart(product);  // Assuming `addProductToCart` might be an async function
-            setIsAdding(false);  // Set loading state to false once product is added
-      
-            // Use setTimeout to delay the execution of onAddToCart
-          
+            setIsAdding(false);  // Set loading state to false once product is added    
+            // Use setTimeout to delay the execution of onAddToCart        
                 if (onAddToCart) { // Ensure onAddToCart is defined before calling it
                     onAddToCart();  
                   }
-              
-          
               } catch (error) {
                 console.error("Error adding product to cart:", error);
                 setIsAdding(false); // Set loading state to false even if there's an error
               }
             }
           }; 
-      
          
         if (error) {
             return <div>{error}</div>;
@@ -74,17 +67,19 @@ export const ProductDetail = ({
         <h2 className="text-4xl font-bold mb-6">{product.title}</h2>
   
         {/* Product Image */}
+        {/* <div className="mb-4"> */}
+        {/* <ProductCard product={product} /> */}
+        {/* </div> */}
+
         <Image
           src={product.imageUrl}
           alt={product.title}
           width={500}
           height={400}
-          className="rounded-lg mb-4"
-          //layout="responsive"
-         // objectFit="cover"
+          className="rounded-lg mb-4"     
         />
 
-        //Product Price
+        {/* Product Price */}
         <p>
           <strong>category</strong> {category.name}
         </p>
@@ -96,7 +91,6 @@ export const ProductDetail = ({
         </Link>  
        
   
-
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
@@ -108,6 +102,12 @@ export const ProductDetail = ({
         >
           {isAdding ? 'Adding...' : 'Add to Cart'} {/* Display "Adding..." when loading */}
         </button>
+
+        {/* Related Products Section (Product Grid) */}
+        <div className="mt-12">
+          <h3 className="text-2xl font-bold mb-6">Related Products</h3>
+          {/* <ProductGrid products={relatedProducts} /> */}
+        </div>  
       </div>
     );
   };

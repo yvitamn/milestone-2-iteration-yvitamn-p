@@ -17,7 +17,7 @@ const LayoutUser = ({
       
       {/* <Header /> */}
       
-      <main>{children}</main>
+      <main className="flex-grow">{children}</main>
 
 
       <Footer/>

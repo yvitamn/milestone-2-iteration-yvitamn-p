@@ -31,134 +31,162 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
   margin: 0;
   padding: 0;
   }
+
   main {
     flex-grow: 1;
-  }
-/* Center all content within the main container */
-.container {
-width: 100%;
-max-width: 1200px; /* Adjust this value as needed */
-margin: 0 auto;
-padding: 0 1rem;
-}
-
-@layer components {
-  .my-class {
-    @apply bg-purpleshade-400 border border-purpleshade-400;
-  }
-  .btn {
-    @apply bg-blue-500 text-white p-2 rounded;
-  }
-  
-  .header {
-    @apply text-3xl font-bold;
-  }
-  .product-card {
-    @apply bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out;
-  }
-  
-  .product-image {
-    @apply w-full h-64 object-cover rounded-lg mb-4 shadow-md;
+    display: flex;
+    justify-content: center;
+    padding: 100px 50px;
+    margin-bottom: 60px;
   }
 
-  .product-title {
-    @apply text-2xl font-semibold text-gray-800 mb-2;
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: transparent;
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
   }
-
-  .product-description {
-    @apply text-gray-600 text-sm line-clamp-3;
+  footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    /* width: 100%; */
+    background-color: transparent;
+    height: 60px;
   }
-
-  .product-price {
-    @apply mt-4 text-lg font-bold text-green-500;
-    /* Styling for grid items */
-  .product-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8;
-  }
-
-  /* Styling for loading and error states */
-  .loading, .error, .no-products {
-    @apply text-center py-10 text-xl;
-  }
-  }
-}
-
-@layer utilities {
-  .bg-purpleshade-400 {
-    background-color: #9b4d96;
-  }
-  .border-purpleshade-400 {
-    border-color: #9b4d96;
     
-.back-button {
-  @apply inline-flex items-center px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md shadow-md transition duration-300 ease-in-out;
-}
 
-.back-button:hover {
-  @apply bg-blue-600;
-}
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-  }
-}
+    /* Center all content within the main container */
+    .container {
+    width: 100%;
+    max-width: 1200px; /* Adjust this value as needed */
+    margin: 0 auto;
+    padding: 0 1rem;
+    }
+
+    @layer components {
+      .my-class {
+        @apply bg-purpleshade-400 border border-purpleshade-400;
+      }
+      .btn {
+        @apply bg-blue-500 text-white p-2 rounded;
+      }
+      
+      .header {
+        @apply text-3xl font-bold;
+      }
+      .product-card {
+        @apply bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out;
+      }
+      
+      .product-image {
+        @apply w-full h-64 object-cover rounded-lg mb-4 shadow-md;
+      }
+
+      .product-title {
+        @apply text-2xl font-semibold text-gray-800 mb-2;
+      }
+
+      .product-description {
+        @apply text-gray-600 text-sm line-clamp-3;
+      }
+
+      .product-price {
+        @apply mt-4 text-lg font-bold text-green-500;
+        /* Styling for grid items */
+
+      /* .product-grid {
+        @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8;
+      } */
+
+      /* Styling for loading and error states
+      /* .loading, .error, .no-products {
+        @apply text-center py-10 text-xl;
+      }*/
+      } 
+    }
+
+    @layer utilities {
+      .bg-purpleshade-400 {
+        background-color: #9b4d96;
+      }
+      .border-purpleshade-400 {
+        border-color: #9b4d96;
+        
+    .back-button {
+      @apply inline-flex items-center px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md shadow-md transition duration-300 ease-in-out;
+    }
+
+    .back-button:hover {
+      @apply bg-blue-600;
+    }
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+      }
+    }
 
 
 
-.transition-opacity {
-  transition: opacity 0.3s ease-out;
-}
-header {
-  background-color: transparent !important; /* Ensure transparency */
-}
+    .transition-opacity {
+      transition: opacity 0.3s ease-out;
+    }
+    header {
+      background-color: transparent !important; /* Ensure transparency */
+    }
 
-img {
-  mix-blend-mode: multiply; /* Optional: Adjust blending for better visibility */
-}
+    img {
+      mix-blend-mode: multiply; /* Optional: Adjust blending for better visibility */
+    }
 
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
 
-.fade-in {
-  opacity: 1;
-  transition: opacity 0.5s ease-in-out;
-}
+    .fade-in {
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
 
 
-/* Initial visible state of the modal */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 20px;
-  border-radius: 8px;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 1s ease-out, visibility 0s 1s; /* Adds fade-out animation */
-}
+    /* Initial visible state of the modal */
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1s ease-out, visibility 0s 1s; /* Adds fade-out animation */
+    }
 
-/* Fade-out state */
-.modal.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1s ease-out, visibility 0s 1s; /* Keeps visibility hidden after fade */
-}
+    /* Fade-out state */
+    .modal.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1s ease-out, visibility 0s 1s; /* Keeps visibility hidden after fade */
+    }
 
-.modal-content {
-  text-align: center;
-}
+    .modal-content {
+      text-align: center;
+    }
 
 

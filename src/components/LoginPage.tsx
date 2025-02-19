@@ -21,12 +21,12 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  //   if (!email || !password) {
-  //     setError('Please enter both email and password');
-  //     return;
-  //   }
-  // setIsLoading(true);
-  // setError('');
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+  setIsLoading(true);
+  setError('');
 
     try {
       await login({ email, password }); // Use login function from context

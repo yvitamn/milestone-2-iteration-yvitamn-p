@@ -2,7 +2,7 @@
 import { GetStaticProps } from 'next';
 import { fetchCategories } from '@/lib/api';
 import { CategoryType } from '@/lib/types';
-import CategoryList from '@/components/CategorySelect';
+import CategorySelect from '@/components/CategorySelect';
 import { useRouter } from 'next/router';
 import Navbar from '@/layout/Navbar'; 
 
@@ -40,7 +40,7 @@ const CategoriesPage = ({ categories }: CategoriesPageProps) => {
         <Navbar categories={categories} />
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold">NEW ARRIVAL</h1>
-      <CategoryList 
+      <CategorySelect
       categories={categories} 
       onCategorySelect={onCategorySelect}
       />

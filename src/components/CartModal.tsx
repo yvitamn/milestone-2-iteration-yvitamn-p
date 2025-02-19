@@ -20,7 +20,6 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
   const modalRef = useRef<HTMLDivElement>(null);
   
-  
   // Close the modal when clicking outside of it
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {

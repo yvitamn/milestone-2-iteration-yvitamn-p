@@ -35,20 +35,20 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse) {
   }
 
   // Function to validate the product data structure
-const validateProductData = (product: any): boolean => {
-  return (
-    product &&
-    (typeof product.id === 'number' || typeof product.id === 'string') && // id can be either a number or string
-    typeof product.title === 'string' &&
-    typeof product.description === 'string' &&
-    typeof product.price === 'number' &&
-    Array.isArray(product.images) &&
-    product.images.length > 0 &&
-    product.category &&
-    typeof product.category.id === 'number' &&
-    typeof product.category.name === 'string'
-  );
-};
+// const validateProductData = (product: any): boolean => {
+//   return (
+//     product &&
+//     (typeof product.id === 'number' || typeof product.id === 'string') && // id can be either a number or string
+//     typeof product.title === 'string' &&
+//     typeof product.description === 'string' &&
+//     typeof product.price === 'number' &&
+//     Array.isArray(product.images) &&
+//     product.images.length > 0 &&
+//     product.category &&
+//     typeof product.category.id === 'number' &&
+//     typeof product.category.name === 'string'
+//   );
+// };
 
 try {
   // Fetch data from the external API or database

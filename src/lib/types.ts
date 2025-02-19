@@ -149,22 +149,22 @@ export interface CartModalProps {
   
 
   //Custom API Error class
-export class ApiError extends Error {
-    // constructor(
-    //   public status: number,
-    //   message: string,
-    //   public data?: Record<string, unknown>
-    // ) {
-    //   super(message);
-    //   this.name = "ApiError";
-    // }
+// export class ApiError extends Error {
+//     // constructor(
+//     //   public status: number,
+//     //   message: string,
+//     //   public data?: Record<string, unknown>
+//     // ) {
+//     //   super(message);
+//     //   this.name = "ApiError";
+//     // }
 
-    statusCode: number;
+//     statusCode: number;
 
-    constructor(statusCode: number, message: string) {
-        super(message);
-        this.statusCode = statusCode;
-        this.name = 'ApiError';
-    }
-  }
+//     constructor(statusCode: number, message: string) {
+//         super(message);
+//         this.statusCode = statusCode;
+//         this.name = 'ApiError';
+//     }
+//   }
 
