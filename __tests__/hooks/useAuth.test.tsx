@@ -36,11 +36,7 @@ describe('TestComponent', () => {
 
     // Mocking the useUserData hook to simulate API behavior
     (useUserData as jest.Mock).mockReturnValue({
-        userFetched: { 
-            id: '12345', 
-            email: 'testuser@example.com', 
-            name: 'Test User' 
-        },
+        user: mockUserData,  
         errorUserData: null,
       });
 

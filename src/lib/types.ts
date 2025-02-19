@@ -4,11 +4,11 @@ import { ParsedUrlQuery } from 'querystring';
 
 // Frontend representation of a product
 export interface ProductsType {
-    id: string | number ;
+    id: string | number | any;
     title: string;
     description: string;
     price: number;
-    imageUrl: string; 
+    imageUrl: string | any; 
     quantity: number;
     category: CategoryType;
   }
@@ -21,10 +21,10 @@ export interface ProductsType {
 
  // Category information
 export interface CategoryType {
-    id: number | string ;
+    id: number | string | any;
     name: string;
     description?: string;
-    image?: string; // URL of the category image
+    image?: string | any; // URL of the category image
   }
 
 // Error data format
@@ -47,7 +47,7 @@ export interface CategoryType {
    
  // User type after registration and login
   export interface User {
-    id: number;
+    id: number | string | any;
     email: string;
     name: string;
     //cart: CartItem[]; 
@@ -63,7 +63,7 @@ export interface CategoryType {
     // AuthResponseWithPurchase (extends User and adds optional purchase history)
   export interface AuthResponseWithPurchase extends User {
         lastPurchase?: { 
-        productId: number;
+        productId: number | string | any;
         name: string; 
         price: number;
       }[]; 
