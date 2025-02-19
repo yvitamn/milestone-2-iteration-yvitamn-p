@@ -1,6 +1,6 @@
 
 
-![Product Image](./assets/product.jpg)
+![Product Image](./src/assets/product.jpg)
 
 
 ## Table of Contents
@@ -65,7 +65,8 @@ src/
 
 
 ## Build Details & Performance
-![Build](./assets/build2.jpg)
+Build output with hybrid rendering:
+![Build](./src/assets/build2.jpg)
 
 
 ## Future Roadmap
