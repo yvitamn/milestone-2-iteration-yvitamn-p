@@ -1,5 +1,5 @@
-import { renderHook } from '@testing-library/react-hooks';
-import { useUserData } from '@/hooks/use-user';
+import { renderHook } from '@testing-library/react';
+import { useUserData } from '@/hooks/useUserData';
 import { AuthResponseWithPurchase } from '@/lib/types';
 
 describe('useUserData Hook', () => {
@@ -13,7 +13,7 @@ describe('useUserData Hook', () => {
       id: 1,
       name: 'Test User',
       email: 'test@example.com',
-      purchases: [],
+      lastPurchase:[],
     };
 
     localStorage.setItem('token', 'test-token');

@@ -19,7 +19,14 @@ export const useUserData = (isAuthenticated: boolean) => {
         if (storedUserData) {
           try {
             const parsedUserData: AuthResponseWithPurchase = JSON.parse(storedUserData);
-            setUserFetched(parsedUserData); // Set the fetched user data
+           
+           // Ensure the id is a number
+          const validUser = {
+            ...parsedUserData,
+            id: Number(parsedUserData.id),
+          };
+           
+            setUserFetched(validUser); // Set the fetched user data
             setError(null);  // Clear any previous errors
           } catch (err) {
             setError('Failed to parse user data');

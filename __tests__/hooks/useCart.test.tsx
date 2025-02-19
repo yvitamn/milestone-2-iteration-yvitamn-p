@@ -18,7 +18,7 @@ const mockContextValue: CartContextType = {
 };
 
 jest.mock('@/lib/contexts/CartContext', () => ({
-  useContext: jest.fn().mockReturnValue(mockContextValue),
+  useContext: jest.fn(),
 }));
 
 describe('useCart Hook', () => {
