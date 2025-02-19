@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { fetchCategories, fetchProductsByCategory } from '@/lib/api';
 import { ProductsType, CategoryType, Params } from '@/lib/types';  // Assuming you have this type
 import { GetStaticProps, GetStaticPaths } from 'next';
-//import { ProductDetail } from '@/components/ProductDetail';
+import DynamicImageComponent from '@/components/DynamicImage';
 
 
 interface ProductCategoryProps {
@@ -131,13 +131,13 @@ const ProductCategoryPage = ({ products, category }: ProductCategoryProps) => {
                 {/* Wrap the image inside a Link to navigate to the product details */}
                 <Link href={`/products/${product.id}`}>
                   <div className="relative w-full h-64 mb-4">
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.title}
-                      width={500}
-                      height={400}
-                      className="rounded-lg object-cover"
-                    />
+                  <DynamicImageComponent
+                    imageUrl={product.imageUrl || null}
+                    alt={product.title}
+                    width={500}
+                    height={400}
+                    className="rounded-lg object-cover"
+                  />
                   </div>
                 </Link>
                 <h3 className="text-xl font-semibold text-gray-800">{product.title}</h3>

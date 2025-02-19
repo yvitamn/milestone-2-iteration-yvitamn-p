@@ -1,11 +1,11 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
+//import Image from 'next/image';
 import {  ProductsType, CategoryType } from '@/lib/types';
 import useCart from '@/hooks/useCart';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-
+import DynamicImageComponent from '@/components/DynamicImage'; 
 
 interface ProductDetailProps {
   product: ProductsType;
@@ -71,14 +71,14 @@ export const ProductDetail = ({  product, category, onAddToCart,
         {/* <ProductCard product={product} /> */}
         {/* </div> */}
 
-        <Image
-          src={product.imageUrl}
-          alt={product.title}
-          width={500}
-          height={400}
-          className="rounded-lg mb-4"     
-        />
-
+        <DynamicImageComponent
+                    imageUrl={product.imageUrl || null}
+                    alt={product.title}
+                    width={500}
+                    height={400}
+                    className="rounded-lg object-cover"
+                  />
+        {/* "rounded-lg mb-4"  */}
         {/* Product Price */}
         <p>
          {category.name}

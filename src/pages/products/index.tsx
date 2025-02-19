@@ -1,12 +1,12 @@
 'use client';
-import Image from 'next/image';
+//import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link'; 
 import { fetchProducts } from '@/lib/api';
 import { ProductsType } from '@/lib/types';  
 import { GetStaticProps } from 'next';
 import { Search } from 'lucide-react';
-//import ProductGrid from '@/components/theme/ProductGrid';
+import DynamicImageComponent from '@/components/DynamicImage'; 
 
 interface ProductsPageProps {
   products: ProductsType[];
@@ -69,8 +69,8 @@ const ProductPage = ({ products }: ProductsPageProps) => {
             <Link key={product.id} href={`/products/${product.id}`}>
               <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
                 <div className="relative w-full h-64 mb-4">
-                  <Image
-                    src={product.imageUrl}
+                <DynamicImageComponent
+                    imageUrl={product.imageUrl || null}
                     alt={product.title}
                     width={500}
                     height={400}
